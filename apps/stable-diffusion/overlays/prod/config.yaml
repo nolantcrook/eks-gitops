@@ -1,0 +1,17 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: stable-diffusion-api
+spec:
+  replicas: 2
+  template:
+    spec:
+      containers:
+      - name: api
+        resources:
+          requests:
+            memory: "4Gi"
+            cpu: "2"
+          limits:
+            memory: "8Gi"
+            cpu: "4" 

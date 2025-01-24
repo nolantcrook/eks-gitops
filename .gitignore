@@ -12,7 +12,7 @@
 
 # Ignore all JENKINS_HOME except jobs directory, root xml config, and
 # .gitignore file.
-/*
+
 !/jobs
 !/.gitignore
 !/*.xml
@@ -48,3 +48,63 @@ jobs/**/*workspace
 
 # As a result, only Jenkins settings and job config.xml files in JENKINS_HOME
 # will be tracked by git.
+
+# Operating System Files
+.DS_Store
+Thumbs.db
+
+# Editor/IDE Files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Kubernetes/ArgoCD
+kubeconfig
+*.kubeconfig
+.kube/
+.argocd/
+
+# Temporary Files
+*.tmp
+*.temp
+*.log
+
+# Environment Files
+.env
+.env.*
+*.env
+
+# Terraform (in case any local testing is done)
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+
+# Package Managers
+node_modules/
+yarn.lock
+package-lock.json
+
+# Helm
+charts/*/charts/
+charts/*/Chart.lock
+*.tgz
+
+# Kustomize
+kustomization.yaml.bak
+
+# Local Development
+local/
+dev-local/
+*.local.*
+
+# Secrets (prevent accidental commits)
+*.key
+*.pem
+*.crt
+*.cert
+*secret*
+*password*
+*credential*

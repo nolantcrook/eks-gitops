@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: stable-diffusion-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: stable-diffusion-api
+  template:
+    metadata:
+      labels:
+        app: stable-diffusion-api
+    spec:
+      containers:
+      - name: api
+        image: your-registry.amazonaws.com/stable-diffusion-api:latest
+        ports:
+        - containerPort: 8080
+        resources:
+          requests:
+            memory: "2Gi"
+            cpu: "1"
+          limits:
+            memory: "4Gi"
+            cpu: "2" 
