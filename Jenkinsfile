@@ -3,6 +3,8 @@ pipeline {
     
     environment {
         AWS_REGION = 'us-west-2'
+        AWS_CONFIG_FILE = '/root/.aws/config'
+        AWS_SHARED_CREDENTIALS_FILE = '/root/.aws/credentials'
     }
     
     parameters {
@@ -11,45 +13,16 @@ pipeline {
             choices: ['dev', 'prod'],
             description: 'Select the environment to deploy'
         )
-        string(
-            name: 'GIT_BRANCH',
-            defaultValue: 'main',
-            description: 'Git branch to deploy'
-        )
     }
     
     stages {
-        stage('Checkout') {
-            steps {
-                checkout scm
-            }
-        }
-        
-        stage('Update Manifests') {
+        stage('Configure kubectl') {
             steps {
                 script {
-                    // Clone the GitOps repo if different from current
+                    // Update kubeconfig for the EKS cluster using existing AWS credentials
                     sh """
-                        if [ ! -d "apps" ]; then
-                            git clone https://github.com/your-org/stable-diffusion-gitops.git .
-                        fi
+                        aws eks update-kubeconfig --name eks-gpu-${params.ENV} --region ${AWS_REGION}
                     """
-                    
-                    // Commit and push any changes
-                    withCredentials([sshUserPrivateKey(credentialsId: 'github-credentials', keyFileVariable: 'SSH_KEY')]) {
-                        sh """
-                            git config user.email "jenkins@your-company.com"
-                            git config user.name "Jenkins"
-                            
-                            if [[ \$(git status -s) ]]; then
-                                git add .
-                                git commit -m "Update deployment configuration for ${params.ENV}"
-                                GIT_SSH_COMMAND='ssh -i ${SSH_KEY}' git push origin HEAD:${params.GIT_BRANCH}
-                            else
-                                echo "No changes to commit"
-                            fi
-                        """
-                    }
                 }
             }
         }
@@ -57,10 +30,7 @@ pipeline {
         stage('Verify Deployment') {
             steps {
                 script {
-                    // Wait for ArgoCD to sync
                     sh """
-                        kubectl config use-context eks-gpu-${params.ENV}
-                        
                         echo "Waiting for ArgoCD to sync changes..."
                         argocd app wait hello-world --timeout 300
                         
