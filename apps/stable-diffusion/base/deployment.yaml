@@ -1,26 +1,29 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: stable-diffusion-api
+  name: hello-world
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: stable-diffusion-api
+      app: hello-world
   template:
     metadata:
       labels:
-        app: stable-diffusion-api
+        app: hello-world
     spec:
       containers:
-      - name: api
-        image: your-registry.amazonaws.com/stable-diffusion-api:latest
-        ports:
-        - containerPort: 8080
+      - name: ubuntu
+        image: ubuntu:latest
+        command: ["/bin/bash", "-c"]
+        args:
+          - |
+            echo "Hello World!"
+            sleep infinity
         resources:
           requests:
-            memory: "2Gi"
-            cpu: "1"
+            memory: "64Mi"
+            cpu: "100m"
           limits:
-            memory: "4Gi"
-            cpu: "2" 
+            memory: "128Mi"
+            cpu: "200m" 

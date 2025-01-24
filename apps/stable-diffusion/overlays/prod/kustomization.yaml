@@ -7,4 +7,9 @@ resources:
 - ../../base
 
 patchesStrategicMerge:
-- config.yaml 
+- config.yaml
+
+images:
+- name: your-registry.amazonaws.com/stable-diffusion-api
+  newName: your-registry.amazonaws.com/stable-diffusion-api
+  newTag: latest 
