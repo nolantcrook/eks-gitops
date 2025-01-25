@@ -42,7 +42,7 @@ pipeline {
             }
         }
 
-        stage('Install ArgoCD') {
+       stage('Install ArgoCD') {
             steps {
                 script {
                     sh '''
@@ -59,11 +59,15 @@ pipeline {
                         echo "Waiting for ArgoCD pods to start..."
                         sleep 30
                         
-                        # Verify all required components are running
-                        for deployment in argocd-server argocd-repo-server argocd-application-controller argocd-redis; do
-                            echo "Waiting for $deployment to be ready..."
+                        # Verify deployments
+                        for deployment in argocd-server argocd-repo-server argocd-redis; do
+                            echo "Waiting for deployment $deployment to be ready..."
                             kubectl wait --for=condition=available --timeout=600s deployment/$deployment -n argocd
                         done
+                        
+                        # Verify statefulset
+                        echo "Waiting for application controller statefulset to be ready..."
+                        kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=argocd-application-controller -n argocd --timeout=600s
                         
                         echo "Final pod status:"
                         kubectl get pods -n argocd
