@@ -122,11 +122,29 @@ pipeline {
             steps {
                 script {
                     sh """
+                        echo "Installing ArgoCD CLI..."
+                        curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+                        chmod +x argocd-linux-amd64
+                        mv argocd-linux-amd64 /usr/local/bin/argocd
+
+                        echo "Logging into ArgoCD..."
+                        ARGOCD_PASSWORD=\$(kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d)
+                        
+                        # Use kubectl port-forward in the background
+                        kubectl port-forward svc/argocd-server -n argocd 8080:443 &
+                        sleep 5  # Wait for port-forward to establish
+                        
+                        # Login to ArgoCD
+                        argocd login localhost:8080 --username admin --password \$ARGOCD_PASSWORD --insecure
+                        
                         echo "Waiting for ArgoCD to sync changes..."
                         argocd app wait hello-world --timeout 300
                         
                         echo "Waiting for deployment rollout..."
                         kubectl -n stable-diffusion rollout status deployment/hello-world --timeout=300s
+                        
+                        # Clean up port-forward
+                        pkill -f "kubectl port-forward"
                     """
                 }
             }
