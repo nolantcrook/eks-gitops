@@ -32,31 +32,74 @@ pipeline {
             }
         }
         
-        stage('Configure ArgoCD') {
-            steps {
-                script {
-                    dir('terraform/compute') {
-                        withEnv(["ENV=${params.ENV}"]) {
-                            sh '''
-                                ARGOCD_SERVER=http://argocd-alb-dev-1516537476.us-west-2.elb.amazonaws.com/
-                                
-                                argocd login $ARGOCD_SERVER \
-                                    --username admin \
-                                    --password $(kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d) \
-                                    --insecure
-                            '''
-                        }
-                    }
-                }
-            }
-        }
-        
         stage('Configure kubectl') {
             steps {
                 script {
                     sh """
                         aws eks update-kubeconfig --name eks-gpu-${params.ENV} --region ${AWS_REGION}
                     """
+                }
+            }
+        }
+
+        stage('Install ArgoCD') {
+            steps {
+                script {
+                    sh '''
+                        # Create ArgoCD namespace
+                        kubectl create namespace argocd --dry-run=client -o yaml | kubectl apply -f -
+                        
+                        # Install ArgoCD
+                        kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+                        
+                        # Wait for ArgoCD server to be ready
+                        echo "Waiting for ArgoCD server to be ready..."
+                        kubectl wait --for=condition=available --timeout=300s deployment/argocd-server -n argocd
+                    '''
+                }
+            }
+        }
+        
+        stage('Configure ArgoCD') {
+            steps {
+                script {
+                    sh '''
+                        # Wait for the initial admin secret to be created
+                        echo "Waiting for admin secret to be created..."
+                        while ! kubectl -n argocd get secret argocd-initial-admin-secret &> /dev/null; do
+                            sleep 5
+                        done
+                        
+                        # Get ArgoCD server address (using port-forward temporarily)
+                        echo "Setting up port forward..."
+                        kubectl port-forward svc/argocd-server -n argocd 8080:443 &
+                        sleep 5
+                        
+                        # Login to ArgoCD
+                        echo "Logging into ArgoCD..."
+                        ADMIN_PASSWORD=$(kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d)
+                        argocd login localhost:8080 \
+                            --username admin \
+                            --password "$ADMIN_PASSWORD" \
+                            --insecure
+                            
+                        # Kill port-forward
+                        pkill -f "port-forward"
+                    '''
+                }
+            }
+        }
+        
+        stage('Deploy Applications') {
+            steps {
+                script {
+                    sh '''
+                        # Create project
+                        kubectl apply -f argocd/projects/stable-diffusion.yaml
+                        
+                        # Create application
+                        kubectl apply -f argocd/applications/stable-diffusion.yaml
+                    '''
                 }
             }
         }
