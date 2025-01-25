@@ -35,14 +35,11 @@ pipeline {
         stage('Configure ArgoCD') {
             steps {
                 script {
-                    // Get the ALB DNS name from terraform output
                     dir('terraform/compute') {
                         withEnv(["ENV=${params.ENV}"]) {
                             sh '''
-                                // terragrunt init --terragrunt-non-interactive
                                 ARGOCD_SERVER=http://argocd-alb-dev-1516537476.us-west-2.elb.amazonaws.com/
                                 
-                                # Configure ArgoCD CLI
                                 argocd login $ARGOCD_SERVER \
                                     --username admin \
                                     --password $(kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d) \
@@ -57,9 +54,8 @@ pipeline {
         stage('Configure kubectl') {
             steps {
                 script {
-                    // Update kubeconfig for the EKS cluster using existing AWS credentials
                     sh """
-                        aws eks update-kubeconfig --name eks-gpu-${ENV} --region ${AWS_REGION}
+                        aws eks update-kubeconfig --name eks-gpu-${params.ENV} --region ${AWS_REGION}
                     """
                 }
             }
