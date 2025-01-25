@@ -6,8 +6,6 @@ metadata:
 spec:
   server:
     insecure: true
-    service:
-      type: LoadBalancer
     extraArgs:
       - --insecure
   
@@ -24,21 +22,27 @@ spec:
     openShiftOAuth: false
   
   ha:
-    enabled: false 
-
-apiVersion: v1
-kind: Service
+    enabled: false
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
 metadata:
-  name: argocd-server
+  name: argocd-server-ingress
   namespace: argocd
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}]'
+    alb.ingress.kubernetes.io/backend-protocol: HTTP
 spec:
-  type: LoadBalancer
-  ports:
-  - name: http
-    port: 80
-    targetPort: 8080
-  - name: https
-    port: 443
-    targetPort: 8080
-  selector:
-    app.kubernetes.io/name: argocd-server 
+  rules:
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: argocd-server
+                port:
+                  number: 80 
