@@ -123,9 +123,6 @@ pipeline {
                 script {
                     sh """
                         echo "Installing ArgoCD CLI..."
-                        curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
-                        chmod +x argocd-linux-amd64
-                        mv argocd-linux-amd64 /usr/local/bin/argocd
 
                         echo "Logging into ArgoCD..."
                         ARGOCD_PASSWORD=\$(kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d)
