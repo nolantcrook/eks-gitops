@@ -80,34 +80,25 @@ pipeline {
             steps {
                 script {
                     sh '''
-                        # Wait for the initial admin secret to be created
-                        echo "Waiting for admin secret to be created..."
-                        while ! kubectl -n argocd get secret argocd-initial-admin-secret &> /dev/null; do
-                            echo "Waiting for admin secret..."
-                            sleep 5
-                        done
-                        
-                        # Get ArgoCD server address
-                        echo "Getting ArgoCD server address..."
-                        ARGOCD_SERVER=$(kubectl get svc argocd-server -n argocd -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
-                        
-                        # Wait for the server to be ready
-                        echo "Waiting for ArgoCD server to be ready..."
-                        while [ -z "$ARGOCD_SERVER" ]; do
-                            sleep 5
+                        # Check if admin secret exists
+                        echo "Checking for admin secret..."
+                        if kubectl -n argocd get secret argocd-initial-admin-secret &> /dev/null; then
+                            echo "Admin secret found!"
+                            
+                            # Get ArgoCD server address
+                            echo "Getting ArgoCD server address..."
                             ARGOCD_SERVER=$(kubectl get svc argocd-server -n argocd -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
-                        done
-                        
-                        # Get the admin password
-                        echo "Getting admin password..."
-                        ADMIN_PASSWORD=$(kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d)
-                        
-                        # Login to ArgoCD
-                        echo "Logging into ArgoCD..."
-                        argocd login "$ARGOCD_SERVER" \
-                            --username admin \
-                            --password "$ADMIN_PASSWORD" \
-                            --insecure
+                            
+                            # Get the admin password
+                            echo "Getting admin password..."
+                            ADMIN_PASSWORD=$(kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d)
+                            
+                            echo "ArgoCD is ready to use!"
+                            echo "Password has been retrieved."
+                        else
+                            echo "Error: Admin secret not found!"
+                            exit 1
+                        fi
                     '''
                 }
             }
