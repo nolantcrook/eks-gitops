@@ -4,10 +4,14 @@ metadata:
   name: argocd-server
   namespace: argocd
 spec:
-  type: NodePort  # Changed from LoadBalancer
+  type: ClusterIP  # Changed from NodePort/LoadBalancer
   ports:
     - name: http
       port: 80
+      targetPort: 8080
+      protocol: TCP
+    - name: https
+      port: 443
       targetPort: 8080
       protocol: TCP
   selector:
