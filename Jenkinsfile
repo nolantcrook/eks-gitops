@@ -39,8 +39,8 @@ pipeline {
                     dir('terraform/compute') {
                         withEnv(["ENV=${params.ENV}"]) {
                             sh '''
-                                terragrunt init --terragrunt-non-interactive
-                                ARGOCD_SERVER=$(terragrunt output -raw argocd_alb_dns_name)
+                                // terragrunt init --terragrunt-non-interactive
+                                ARGOCD_SERVER=http://argocd-alb-dev-1516537476.us-west-2.elb.amazonaws.com/
                                 
                                 # Configure ArgoCD CLI
                                 argocd login $ARGOCD_SERVER \
