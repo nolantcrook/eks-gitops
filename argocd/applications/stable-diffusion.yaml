@@ -1,12 +1,12 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: stable-diffusion
+  name: hello-world
   namespace: argocd
 spec:
   project: stable-diffusion
   source:
-    repoURL: https://github.com/your-org/stable-diffusion-gitops.git
+    repoURL: https://github.com/roguewavefunction/stable-diffusion-gitops.git
     targetRevision: HEAD
     path: apps/stable-diffusion/overlays/dev
   destination:

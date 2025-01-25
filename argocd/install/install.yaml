@@ -5,11 +5,11 @@ metadata:
   namespace: argocd
 spec:
   server:
-    insecure: false
-    route:
-      enabled: true
+    insecure: true
     service:
       type: LoadBalancer
+    extraArgs:
+      - --insecure
   
   rbac:
     defaultPolicy: 'role:readonly'
