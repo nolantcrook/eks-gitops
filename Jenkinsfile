@@ -21,7 +21,7 @@ pipeline {
                 script {
                     // Update kubeconfig for the EKS cluster using existing AWS credentials
                     sh """
-                        aws eks update-kubeconfig --name eks-gpu --region ${AWS_REGION}
+                        aws eks update-kubeconfig --name eks-gpu-${ENV} --region ${AWS_REGION}
                     """
                 }
             }
