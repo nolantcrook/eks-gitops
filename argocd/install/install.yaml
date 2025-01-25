@@ -1,29 +1,4 @@
-# Source: https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: argocd-server
-  namespace: argocd
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: argocd-cm
-  namespace: argocd
-data:
-  url: https://argocd.example.com
-  # Add any other custom configurations
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: argocd-redis-ha-configmap
-  namespace: argocd
-data:
-  redis.conf: |
-    dir /data
-    port 6379
----
+# Only override the service configuration
 apiVersion: v1
 kind: Service
 metadata:
@@ -41,34 +16,4 @@ spec:
     targetPort: 8080
   selector:
     app.kubernetes.io/name: argocd-server
-  type: ClusterIP  # Explicitly set to ClusterIP for port-forwarding
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: argocd-server
-  namespace: argocd
-spec:
-  selector:
-    matchLabels:
-      app.kubernetes.io/name: argocd-server
-  template:
-    metadata:
-      labels:
-        app.kubernetes.io/name: argocd-server
-    spec:
-      containers:
-      - name: argocd-server
-        image: quay.io/argoproj/argocd:v2.9.3
-        args:
-        - /usr/local/bin/argocd-server
-        - --insecure
-        ports:
-        - containerPort: 8080
-        readinessProbe:
-          httpGet:
-            path: /healthz
-            port: 8080
-          initialDelaySeconds: 3
-          periodSeconds: 30
-      serviceAccountName: argocd-server
+  type: ClusterIP
