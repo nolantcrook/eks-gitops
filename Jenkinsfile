@@ -122,19 +122,23 @@ pipeline {
             steps {
                 script {
                     sh """
-                        echo "Installing ArgoCD CLI..."
-                        curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
-                        chmod +x argocd-linux-amd64
-                        mv argocd-linux-amd64 /usr/local/bin/argocd
+
 
                         echo "Logging into ArgoCD..."
                         ARGOCD_PASSWORD=\$(kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d)
                         
-                        # Use kubectl port-forward in the background with port 9090
-                        kubectl port-forward svc/argocd-server -n argocd 9090:443 &
+                        # Use kubectl port-forward with address binding and error handling
+                        kubectl port-forward svc/argocd-server -n argocd 9090:443 --address 0.0.0.0 &
+                        PF_PID=\$!
                         sleep 5  # Wait for port-forward to establish
                         
-                        # Login to ArgoCD using port 9090
+                        # Check if port-forward is still running
+                        if ! kill -0 \$PF_PID 2>/dev/null; then
+                            echo "Port-forward failed to start"
+                            exit 1
+                        fi
+                        
+                        # Login to ArgoCD
                         argocd login localhost:9090 --username admin --password \$ARGOCD_PASSWORD --insecure
                         
                         echo "Waiting for ArgoCD to sync changes..."
@@ -143,8 +147,10 @@ pipeline {
                         echo "Waiting for deployment rollout..."
                         kubectl -n stable-diffusion rollout status deployment/hello-world --timeout=300s
                         
-                        # Clean up port-forward
-                        pkill -f "kubectl port-forward"
+                        # Clean up port-forward more safely
+                        if kill -0 \$PF_PID 2>/dev/null; then
+                            kill \$PF_PID
+                        fi
                     """
                 }
             }
