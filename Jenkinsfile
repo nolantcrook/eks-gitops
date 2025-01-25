@@ -52,9 +52,24 @@ pipeline {
                         # Install ArgoCD
                         kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
                         
-                        # Wait for ArgoCD server to be ready
+                        # Wait and check pod status
+                        echo "Waiting for ArgoCD pods to start..."
+                        sleep 30
+                        
+                        echo "Checking pod status..."
+                        kubectl get pods -n argocd
+                        
+                        echo "Checking pod details..."
+                        kubectl describe pods -n argocd
+                        
+                        echo "Checking events..."
+                        kubectl get events -n argocd
+                        
                         echo "Waiting for ArgoCD server to be ready..."
-                        kubectl wait --for=condition=available --timeout=300s deployment/argocd-server -n argocd
+                        kubectl wait --for=condition=available --timeout=600s deployment/argocd-server -n argocd
+                        
+                        echo "Final pod status:"
+                        kubectl get pods -n argocd
                     '''
                 }
             }
