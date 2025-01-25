@@ -82,24 +82,31 @@ pipeline {
                         # Wait for the initial admin secret to be created
                         echo "Waiting for admin secret to be created..."
                         while ! kubectl -n argocd get secret argocd-initial-admin-secret &> /dev/null; do
+                            echo "Waiting for admin secret..."
                             sleep 5
                         done
                         
-                        # Get ArgoCD server address (using port-forward temporarily)
-                        echo "Setting up port forward..."
-                        kubectl port-forward svc/argocd-server -n argocd 8080:443 &
-                        sleep 5
+                        # Get ArgoCD server address
+                        echo "Getting ArgoCD server address..."
+                        ARGOCD_SERVER=$(kubectl get svc argocd-server -n argocd -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+                        
+                        # Wait for the server to be ready
+                        echo "Waiting for ArgoCD server to be ready..."
+                        while [ -z "$ARGOCD_SERVER" ]; do
+                            sleep 5
+                            ARGOCD_SERVER=$(kubectl get svc argocd-server -n argocd -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+                        done
+                        
+                        # Get the admin password
+                        echo "Getting admin password..."
+                        ADMIN_PASSWORD=$(kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d)
                         
                         # Login to ArgoCD
                         echo "Logging into ArgoCD..."
-                        ADMIN_PASSWORD=$(kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d)
-                        argocd login localhost:8080 \
+                        argocd login "$ARGOCD_SERVER" \
                             --username admin \
                             --password "$ADMIN_PASSWORD" \
                             --insecure
-                            
-                        # Kill port-forward
-                        pkill -f "port-forward"
                     '''
                 }
             }
