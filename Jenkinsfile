@@ -130,19 +130,12 @@ pipeline {
                         echo "Logging into ArgoCD..."
                         ARGOCD_PASSWORD=\$(kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d)
                         
-                        # Use kubectl port-forward with address binding and error handling
-                        kubectl port-forward svc/argocd-server -n argocd 9090:443 --address 0.0.0.0 &
-                        PF_PID=\$!
+                        # Use kubectl port-forward in the background
+                        kubectl port-forward svc/argocd-server -n argocd 8080:443 &
                         sleep 5  # Wait for port-forward to establish
                         
-                        # Check if port-forward is still running
-                        if ! kill -0 \$PF_PID 2>/dev/null; then
-                            echo "Port-forward failed to start"
-                            exit 1
-                        fi
-                        
                         # Login to ArgoCD
-                        argocd login localhost:9090 --username admin --password \$ARGOCD_PASSWORD --insecure
+                        argocd login localhost:8080 --username admin --password \$ARGOCD_PASSWORD --insecure
                         
                         echo "Waiting for ArgoCD to sync changes..."
                         argocd app wait hello-world --timeout 300
@@ -150,10 +143,8 @@ pipeline {
                         echo "Waiting for deployment rollout..."
                         kubectl -n stable-diffusion rollout status deployment/hello-world --timeout=300s
                         
-                        # Clean up port-forward more safely
-                        if kill -0 \$PF_PID 2>/dev/null; then
-                            kill \$PF_PID
-                        fi
+                        # Clean up port-forward
+                        pkill -f "kubectl port-forward"
                     """
                 }
             }
