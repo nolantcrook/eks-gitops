@@ -13,9 +13,47 @@ pipeline {
             choices: ['dev', 'prod'],
             description: 'Select the environment to deploy'
         )
+        choice(
+            name: 'ACTION',
+            choices: ['apply', 'destroy'],
+            description: 'Select action (apply or destroy)'
+        )
+        booleanParam(
+            name: 'AUTO_APPROVE',
+            defaultValue: false,
+            description: 'Automatically approve all deployment stages'
+        )
     }
     
     stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+        
+        stage('Configure ArgoCD') {
+            steps {
+                script {
+                    // Get the ALB DNS name from terraform output
+                    dir('terraform/compute') {
+                        withEnv(["ENV=${params.ENV}"]) {
+                            sh '''
+                                terragrunt init --terragrunt-non-interactive
+                                ARGOCD_SERVER=$(terragrunt output -raw argocd_alb_dns_name)
+                                
+                                # Configure ArgoCD CLI
+                                argocd login $ARGOCD_SERVER \
+                                    --username admin \
+                                    --password $(kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d) \
+                                    --insecure
+                            '''
+                        }
+                    }
+                }
+            }
+        }
+        
         stage('Configure kubectl') {
             steps {
                 script {
@@ -43,11 +81,19 @@ pipeline {
     }
     
     post {
+        always {
+            sh '''
+                rm -f terraform/foundation/tfplan
+                rm -f terraform/storage/tfplan
+                rm -f terraform/networking/tfplan
+                rm -f terraform/compute/tfplan
+            '''
+        }
         success {
-            echo "Deployment to ${params.ENV} completed successfully!"
+            echo "Pipeline completed successfully!"
         }
         failure {
-            echo "Deployment to ${params.ENV} failed!"
+            echo "Pipeline failed!"
         }
     }
 } 
