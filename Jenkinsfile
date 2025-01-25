@@ -131,11 +131,11 @@ pipeline {
                         ARGOCD_PASSWORD=\$(kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d)
                         
                         # Use kubectl port-forward in the background
-                        kubectl port-forward svc/argocd-server -n argocd 8080:443 &
+                        kubectl port-forward svc/argocd-server -n argocd 9090:443 &
                         sleep 5  # Wait for port-forward to establish
                         
                         # Login to ArgoCD
-                        argocd login localhost:8080 --username admin --password \$ARGOCD_PASSWORD --insecure
+                        argocd login localhost:9090 --username admin --password \$ARGOCD_PASSWORD --insecure
                         
                         echo "Waiting for ArgoCD to sync changes..."
                         argocd app wait hello-world --timeout 300
