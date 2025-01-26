@@ -48,17 +48,39 @@ pipeline {
        stage('Install ArgoCD') {
             steps {
                 script {
-                    sh '''
+                    // Get GitHub credentials from AWS Secrets Manager
+                    def secretJson = sh(
+                        script: """
+                            aws secretsmanager get-secret-value \
+                                --secret-id github/stable-diffusion-gitops \
+                                --region ${AWS_REGION} \
+                                --query SecretString \
+                                --output text
+                        """,
+                        returnStdout: true
+                    ).trim()
+                    
+                    def secret = readJSON text: secretJson
+                    
+                    // Apply ArgoCD installation with GitHub credentials
+                    sh """
                         # Create ArgoCD namespace
                         kubectl create namespace argocd --dry-run=client -o yaml | kubectl apply -f -
                         
                         # Install ArgoCD base components
                         kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
                         
-                        # Apply our customizations (only overrides)
+                        # Apply our customizations with GitHub credentials
+                        cat argocd/install/repo.yaml | \
+                        GITHUB_USERNAME='${secret.username}' \
+                        GITHUB_TOKEN='${secret.token}' \
+                        envsubst | \
+                        kubectl apply -f -
+                        
+                        # Apply remaining configurations
                         kubectl apply -f argocd/install/install.yaml
                         
-                        # Wait and check pod status
+                        # Wait for pods...
                         echo "Waiting for ArgoCD pods to start..."
                         sleep 30
                         
@@ -74,7 +96,7 @@ pipeline {
                         
                         echo "Final pod status:"
                         kubectl get pods -n argocd
-                    '''
+                    """
                 }
             }
         }
