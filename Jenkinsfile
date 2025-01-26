@@ -50,7 +50,7 @@ pipeline {
                     def secretJson = sh(
                         script: """
                             aws secretsmanager get-secret-value \
-                                --secret-id github/stable-diffusion-gitops \
+                                --secret-id eks-github-secrets-access \
                                 --region ${AWS_REGION} \
                                 --query SecretString \
                                 --output text
@@ -58,8 +58,8 @@ pipeline {
                         returnStdout: true
                     ).trim()
                     
-                    def secret = readJSON text: secretJson
-                    def applications = readJSON text: env.APPLICATIONS
+                    // Parse JSON using groovy's built-in JSON parser
+                    def secret = new groovy.json.JsonSlurper().parseText(secretJson)
                     
                     // Apply ArgoCD installation with GitHub credentials
                     sh """
