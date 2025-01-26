@@ -5,6 +5,9 @@ pipeline {
         AWS_REGION = 'us-west-2'
         AWS_CONFIG_FILE = '/root/.aws/config'
         AWS_SHARED_CREDENTIALS_FILE = '/root/.aws/credentials'
+        APPLICATIONS = [
+            'hello-world': 'stable-diffusion'
+        ]
     }
     
     parameters {
@@ -76,43 +79,29 @@ pipeline {
             }
         }
         
-        stage('Configure ArgoCD') {
-            steps {
-                script {
-                    sh '''
-                        # Check if admin secret exists
-                        echo "Checking for admin secret..."
-                        if kubectl -n argocd get secret argocd-initial-admin-secret &> /dev/null; then
-                            echo "Admin secret found!"
-                            
-                            # Get ArgoCD server address
-                            echo "Getting ArgoCD server address..."
-                            ARGOCD_SERVER=$(kubectl get svc argocd-server -n argocd -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
-                            
-                            # Get the admin password
-                            echo "Getting admin password..."
-                            ADMIN_PASSWORD=$(kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d)
-                            
-                            echo "ArgoCD is ready to use!"
-                            echo "Password has been retrieved."
-                        else
-                            echo "Error: Admin secret not found!"
-                            exit 1
-                        fi
-                    '''
-                }
-            }
-        }
-        
         stage('Deploy Applications') {
             steps {
                 script {
                     sh '''
-                        # Create project
-                        kubectl apply -f argocd/projects/stable-diffusion.yaml
+                        # Create all namespaces
+                        for namespace in ${APPLICATIONS.values()}; do
+                            echo "Creating namespace: $namespace"
+                            kubectl create namespace $namespace --dry-run=client -o yaml | kubectl apply -f -
+                        done
                         
-                        # Create application
-                        kubectl apply -f argocd/applications/stable-diffusion.yaml
+                        # Create all ArgoCD projects
+                        echo "Applying ArgoCD projects..."
+                        kubectl apply -f argocd/projects/
+                        
+                        # Create all applications
+                        echo "Applying ArgoCD applications..."
+                        kubectl apply -f argocd/applications/
+                        
+                        # Wait for namespaces to be ready
+                        for namespace in ${APPLICATIONS.values()}; do
+                            echo "Waiting for namespace $namespace to be ready..."
+                            kubectl wait --for=jsonpath=.status.phase=Active namespace/$namespace --timeout=30s
+                        done
                     '''
                 }
             }
@@ -122,32 +111,33 @@ pipeline {
             steps {
                 script {
                     sh """
-
+                        echo "Installing ArgoCD CLI..."
+                        curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+                        chmod +x argocd-linux-amd64
+                        mv argocd-linux-amd64 /usr/local/bin/argocd
 
                         echo "Logging into ArgoCD..."
                         ARGOCD_PASSWORD=\$(kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d)
                         
                         # Use kubectl port-forward with address binding and error handling
-                        kubectl port-forward svc/argocd-server -n argocd 9090:443 --address 0.0.0.0 &
+                        kubectl port-forward svc/argocd-server -n argocd 8085:443 &
                         PF_PID=\$!
                         sleep 5  # Wait for port-forward to establish
                         
-                        # Check if port-forward is still running
-                        if ! kill -0 \$PF_PID 2>/dev/null; then
-                            echo "Port-forward failed to start"
-                            exit 1
-                        fi
-                        
                         # Login to ArgoCD
-                        argocd login localhost:9090 --username admin --password \$ARGOCD_PASSWORD --insecure
+                        argocd login localhost:8085 --username admin --password \$ARGOCD_PASSWORD --insecure
                         
-                        echo "Waiting for ArgoCD to sync changes..."
-                        argocd app wait hello-world --timeout 300
+                        # Wait for all applications to sync
+                        for app in ${APPLICATIONS.keySet()}; do
+                            echo "Waiting for \$app to sync..."
+                            argocd app wait \$app --timeout 300
+                            
+                            namespace=\${APPLICATIONS[\$app]}
+                            echo "Waiting for \$app deployment rollout in namespace \$namespace..."
+                            kubectl rollout status deployment/\$app -n \$namespace --timeout=300s
+                        done
                         
-                        echo "Waiting for deployment rollout..."
-                        kubectl -n stable-diffusion rollout status deployment/hello-world --timeout=300s
-                        
-                        # Clean up port-forward more safely
+                        # Clean up port-forward
                         if kill -0 \$PF_PID 2>/dev/null; then
                             kill \$PF_PID
                         fi
