@@ -5,9 +5,7 @@ pipeline {
         AWS_REGION = 'us-west-2'
         AWS_CONFIG_FILE = '/root/.aws/config'
         AWS_SHARED_CREDENTIALS_FILE = '/root/.aws/credentials'
-        APPLICATIONS = [
-            'hello-world': 'stable-diffusion'
-        ]
+        APPLICATIONS = '{"hello-world": "stable-diffusion"}'
     }
     
     parameters {
@@ -61,6 +59,7 @@ pipeline {
                     ).trim()
                     
                     def secret = readJSON text: secretJson
+                    def applications = readJSON text: env.APPLICATIONS
                     
                     // Apply ArgoCD installation with GitHub credentials
                     sh """
@@ -86,8 +85,8 @@ pipeline {
                         
                         # Verify deployments
                         for deployment in argocd-server argocd-repo-server argocd-redis; do
-                            echo "Waiting for deployment $deployment to be ready..."
-                            kubectl wait --for=condition=available --timeout=600s deployment/$deployment -n argocd
+                            echo "Waiting for deployment \$deployment to be ready..."
+                            kubectl wait --for=condition=available --timeout=600s deployment/\$deployment -n argocd
                         done
                         
                         # Verify statefulset
