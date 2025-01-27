@@ -146,42 +146,50 @@ for app_name, namespace in apps.items():
             steps {
                 script {
                     sh """
-                        echo "Installing ArgoCD CLI..."
-                        curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
-                        chmod +x argocd-linux-amd64
-                        mv argocd-linux-amd64 /usr/local/bin/argocd
-
-                        echo "Logging into ArgoCD..."
-                        ARGOCD_PASSWORD=\$(kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d)
-                        
-                        # Use kubectl port-forward with address binding and error handling
+                        # Start port-forward
                         kubectl port-forward svc/argocd-server -n argocd 8085:443 &
                         PF_PID=\$!
-                        sleep 5  # Wait for port-forward to establish
                         
-                        # Login to ArgoCD
-                        argocd login localhost:8085 --username admin --password \$ARGOCD_PASSWORD --insecure
-                    """
-                    
-                    // Parse applications and wait for each one
-                    def apps = readJSON text: env.APPLICATIONS
-                    apps.each { app_name, namespace ->
-                        sh """
-                            echo "Waiting for ${app_name} to sync..."
-                            argocd app wait ${app_name} --timeout 300
-                            
-                            echo "Waiting for ${app_name} deployment rollout in namespace ${namespace}..."
-                            kubectl rollout status deployment/${app_name} -n ${namespace} --timeout=300s
-                        """
-                    }
-                    
-                    // Clean up port-forward
-                    sh """
-                        PF_PID=\$(pgrep -f "kubectl port-forward.*argocd-server")
+                        # Wait for port-forward to establish
+                        sleep 5
+                        
+                        # Try to access ArgoCD server
+                        echo "Checking if ArgoCD server is accessible..."
+                        max_retries=30
+                        count=0
+                        while [ \$count -lt \$max_retries ]; do
+                            if curl -k -s https://localhost:8085 > /dev/null; then
+                                echo "ArgoCD server is up!"
+                                break
+                            fi
+                            echo "Waiting for ArgoCD server... (Attempt \$((count+1))/\$max_retries)"
+                            sleep 10
+                            count=\$((count+1))
+                        done
+                        
+                        if [ \$count -eq \$max_retries ]; then
+                            echo "Failed to connect to ArgoCD server after \$max_retries attempts"
+                            exit 1
+                        fi
+                        
+                        # Clean up port-forward
                         if [ ! -z "\$PF_PID" ]; then
                             kill \$PF_PID || true
                         fi
                     """
+                    
+                    // Parse APPLICATIONS environment variable using Python
+                    sh '''
+                        echo "${APPLICATIONS}" | python3 -c "
+import sys, json
+apps = json.load(sys.stdin)
+for app_name, namespace in apps.items():
+    print(f'Checking deployment {app_name} in namespace {namespace}')
+    status = os.system(f'kubectl rollout status deployment/{app_name} -n {namespace} --timeout=300s')
+    if status != 0:
+        sys.exit(1)
+"
+                    '''
                 }
             }
         }
