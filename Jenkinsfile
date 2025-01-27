@@ -46,24 +46,23 @@ pipeline {
        stage('Install ArgoCD') {
             steps {
                 script {
-                    // Get GitHub credentials from AWS Secrets Manager
-                    def secretJson = sh(
-                        script: """
+                    // Get GitHub credentials from AWS Secrets Manager using Python to parse
+                    def (username, token) = sh(
+                        script: '''
                             aws secretsmanager get-secret-value \
                                 --secret-id github/stable-diffusion-gitops-secret \
                                 --region ${AWS_REGION} \
                                 --query SecretString \
-                                --output text
-                        """,
+                                --output text | \
+                            python3 -c "
+                                    import sys, json
+                                    secret = json.load(sys.stdin)
+                                    print(secret['username'])
+                                    print(secret['token'])
+                                    "
+                        ''',
                         returnStdout: true
-                    ).trim()
-                    
-                    // Parse JSON and convert to a serializable Map
-                    def jsonSlurper = new groovy.json.JsonSlurper()
-                    def parsedSecret = jsonSlurper.parseText(secretJson)
-                    def secret = [:]
-                    secret.username = parsedSecret.username
-                    secret.token = parsedSecret.token
+                    ).trim().split('\n')
                     
                     // Apply ArgoCD installation with GitHub credentials
                     sh """
@@ -75,8 +74,8 @@ pipeline {
                         
                         # Apply our customizations with GitHub credentials
                         cat argocd/install/repo.yaml | \
-                        GITHUB_USERNAME='${secret.username}' \
-                        GITHUB_TOKEN='${secret.token}' \
+                        GITHUB_USERNAME='${username}' \
+                        GITHUB_TOKEN='${token}' \
                         envsubst | \
                         kubectl apply -f -
                         
