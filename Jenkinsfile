@@ -54,12 +54,10 @@ pipeline {
                                 --region ${AWS_REGION} \
                                 --query SecretString \
                                 --output text | \
-                            python3 -c "
-                                    import sys, json
-                                    secret = json.load(sys.stdin)
-                                    print(secret['username'])
-                                    print(secret['token'])
-                                    "
+                            python3 -c "import sys, json
+secret = json.load(sys.stdin)
+print(secret['username'])
+print(secret['token'])"
                         ''',
                         returnStdout: true
                     ).trim().split('\n')
