@@ -64,6 +64,9 @@ print(secret['token'])"
                     
                     // Apply ArgoCD installation with GitHub credentials
                     sh """
+                        # Install envsubst
+                        apt-get update && apt-get install -y gettext-base
+                        
                         # Create ArgoCD namespace
                         kubectl create namespace argocd --dry-run=client -o yaml | kubectl apply -f -
                         
