@@ -181,7 +181,7 @@ for app_name, namespace in apps.items():
                     // Parse APPLICATIONS environment variable using Python
                     sh '''
                         echo "${APPLICATIONS}" | python3 -c "
-import sys, json
+import sys, json, os
 apps = json.load(sys.stdin)
 for app_name, namespace in apps.items():
     print(f'Checking deployment {app_name} in namespace {namespace}')
