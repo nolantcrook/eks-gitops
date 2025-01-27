@@ -58,8 +58,12 @@ pipeline {
                         returnStdout: true
                     ).trim()
                     
-                    // Parse JSON using groovy's built-in JSON parser
-                    def secret = new groovy.json.JsonSlurper().parseText(secretJson)
+                    // Parse JSON and convert to a serializable Map
+                    def jsonSlurper = new groovy.json.JsonSlurper()
+                    def parsedSecret = jsonSlurper.parseText(secretJson)
+                    def secret = [:]
+                    secret.username = parsedSecret.username
+                    secret.token = parsedSecret.token
                     
                     // Apply ArgoCD installation with GitHub credentials
                     sh """
