@@ -108,8 +108,13 @@ print(secret['token'])"
             steps {
                 script {
                     sh '''
-                        # Create all namespaces
-                        for namespace in ${APPLICATIONS.values()}; do
+                        # Parse APPLICATIONS JSON using Python
+                        echo "${APPLICATIONS}" | python3 -c "
+import sys, json
+apps = json.load(sys.stdin)
+for app_name, namespace in apps.items():
+    print(f'{namespace}')
+" | sort -u | while read namespace; do
                             echo "Creating namespace: $namespace"
                             kubectl create namespace $namespace --dry-run=client -o yaml | kubectl apply -f -
                         done
@@ -123,7 +128,12 @@ print(secret['token'])"
                         kubectl apply -f argocd/applications/
                         
                         # Wait for namespaces to be ready
-                        for namespace in ${APPLICATIONS.values()}; do
+                        echo "${APPLICATIONS}" | python3 -c "
+import sys, json
+apps = json.load(sys.stdin)
+for app_name, namespace in apps.items():
+    print(f'{namespace}')
+" | sort -u | while read namespace; do
                             echo "Waiting for namespace $namespace to be ready..."
                             kubectl wait --for=jsonpath=.status.phase=Active namespace/$namespace --timeout=30s
                         done
