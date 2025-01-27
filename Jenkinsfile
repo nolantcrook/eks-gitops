@@ -50,7 +50,7 @@ pipeline {
                     def secretJson = sh(
                         script: """
                             aws secretsmanager get-secret-value \
-                                --secret-id eks-github-secrets-access \
+                                --secret-id github/stable-diffusion-gitops-secret \
                                 --region ${AWS_REGION} \
                                 --query SecretString \
                                 --output text
