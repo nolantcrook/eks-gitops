@@ -3,8 +3,17 @@ kind: Service
 metadata:
   name: argocd-server
   namespace: argocd
+  annotations:
+    # Register with target group
+    service.beta.kubernetes.io/aws-load-balancer-target-group-arn: ${TARGET_GROUP_ARN}
+    # Use IP mode for target group
+    service.beta.kubernetes.io/aws-load-balancer-target-type: ip
+    # Health check settings
+    service.beta.kubernetes.io/aws-load-balancer-healthcheck-path: "/"
+    service.beta.kubernetes.io/aws-load-balancer-healthcheck-port: "8080"
+    service.beta.kubernetes.io/aws-load-balancer-healthcheck-protocol: HTTPS
 spec:
-  type: ClusterIP  # Changed from NodePort/LoadBalancer
+  type: ClusterIP
   ports:
     - name: http
       port: 80
