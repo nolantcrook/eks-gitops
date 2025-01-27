@@ -161,20 +161,25 @@ for app_name, namespace in apps.items():
                         
                         # Login to ArgoCD
                         argocd login localhost:8085 --username admin --password \$ARGOCD_PASSWORD --insecure
-                        
-                        # Wait for all applications to sync
-                        for app in ${APPLICATIONS.keySet()}; do
-                            echo "Waiting for \$app to sync..."
-                            argocd app wait \$app --timeout 300
+                    """
+                    
+                    // Parse applications and wait for each one
+                    def apps = readJSON text: env.APPLICATIONS
+                    apps.each { app_name, namespace ->
+                        sh """
+                            echo "Waiting for ${app_name} to sync..."
+                            argocd app wait ${app_name} --timeout 300
                             
-                            namespace=\${APPLICATIONS[\$app]}
-                            echo "Waiting for \$app deployment rollout in namespace \$namespace..."
-                            kubectl rollout status deployment/\$app -n \$namespace --timeout=300s
-                        done
-                        
-                        # Clean up port-forward
-                        if kill -0 \$PF_PID 2>/dev/null; then
-                            kill \$PF_PID
+                            echo "Waiting for ${app_name} deployment rollout in namespace ${namespace}..."
+                            kubectl rollout status deployment/${app_name} -n ${namespace} --timeout=300s
+                        """
+                    }
+                    
+                    // Clean up port-forward
+                    sh """
+                        PF_PID=\$(pgrep -f "kubectl port-forward.*argocd-server")
+                        if [ ! -z "\$PF_PID" ]; then
+                            kill \$PF_PID || true
                         fi
                     """
                 }
