@@ -22,7 +22,7 @@ This repository contains the GitOps configuration for deploying Stable Diffusion
 kubectl apply -f argocd/install/namespace.yaml
 
 # Install ArgoCD
-kubectl apply -f argocd/install/install.yaml
+kubectl apply -f argocd/install/service.yaml
 ```
 
 ### 2. Configure ArgoCD
