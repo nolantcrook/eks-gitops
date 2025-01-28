@@ -7,14 +7,14 @@ spec:
   type: NodePort
   ports:
     - name: http
-      port: 8080
-      targetPort: 8080
-      nodePort: 30080
+      port: 80               # Exposing the service on port 80 for HTTP
+      targetPort: 8080       # Backend pod port for HTTP
+      nodePort: 30080        # NodePort for HTTP
       protocol: TCP
     - name: https
-      port: 8080
-      targetPort: 8080
-      nodePort: 30443
+      port: 443              # Exposing the service on port 443 for HTTPS
+      targetPort: 8080       # Backend pod port for HTTPS
+      nodePort: 30443        # NodePort for HTTPS
       protocol: TCP
   selector:
-    app.kubernetes.io/name: argocd-server 
+    app.kubernetes.io/name: argocd-server
