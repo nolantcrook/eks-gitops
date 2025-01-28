@@ -6,10 +6,5 @@ metadata:
 data:
   # Disable internal TLS since ALB handles it
   server.insecure: "true"
-  # Skip TLS verification
-  server.insecure.skip.tls.verify: "true"
-  # Set base URL for proper redirects
-  server.rootpath: "/"
-  server.baseHRef: "/"
   # Allow termination of HTTPS at ALB
-  server.x-forwarded-proto: "true" 
+  server.x-forwarded-proto: "true"
