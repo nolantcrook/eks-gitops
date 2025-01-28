@@ -50,7 +50,7 @@ pipeline {
                     def (username, token) = sh(
                         script: '''
                             aws secretsmanager get-secret-value \
-                                --secret-id github/stable-diffusion-gitops-secret \
+                                --secret-id github/stable-diff-gitops-secret \
                                 --region ${AWS_REGION} \
                                 --query SecretString \
                                 --output text | \
