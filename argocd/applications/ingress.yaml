@@ -10,7 +10,7 @@ spec:
     targetRevision: HEAD
     path: argocd/install
     kustomize:
-      version: v5.4.3
+      version: v5.0.1
   destination:
     server: https://kubernetes.default.svc
     namespace: argocd
