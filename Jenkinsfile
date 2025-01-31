@@ -130,7 +130,7 @@ waf_acl_arn: \$(echo \$PARAMS | jq -r '.waf_acl_arn')
 alb_security_group_id: \$(echo \$PARAMS | jq -r '.alb_security_group_id')" > argocd/install/ingress/values.yaml
 
                         echo "Generated values file:"
-                        cat argocd/environments/${params.ENV}/values.yaml
+                        cat argocd/install/ingress/values.yaml
                     """
                 }
             }
