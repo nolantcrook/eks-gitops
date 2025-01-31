@@ -1,14 +1,16 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: ingress
+  name: argocd-core
   namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io  # Ensures clean deletion
 spec:
   project: default
   source:
     repoURL: https://github.com/roguewavefunction/stable-diffusion-gitops.git
     targetRevision: HEAD
-    path: argocd/install/ingress
+    path: argocd/install/core
   destination:
     server: https://kubernetes.default.svc
     namespace: argocd
@@ -16,3 +18,6 @@ spec:
     automated:
       prune: true
       selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - Replace=true  # Important for updating CRDs and other resources 

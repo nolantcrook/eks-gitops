@@ -4,7 +4,6 @@ metadata:
   name: argocd-server-ingress
   namespace: argocd
   annotations:
-    # AWS ALB-specific annotations
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS": 443}]'
     alb.ingress.kubernetes.io/target-type: ip
@@ -13,15 +12,15 @@ metadata:
     alb.ingress.kubernetes.io/security-groups: ${alb_security_group_id}
     alb.ingress.kubernetes.io/backend-protocol: HTTP
     alb.ingress.kubernetes.io/healthcheck-path: /healthz
-  spec:
-    rules:
-      - host: argocd.hello-world-domain.com
-        http:
-          paths:
-            - path: /
-              pathType: Prefix
-              backend:
-                service:
-                  name: argocd-server
-                  port:
-                    number: 80
+spec:
+  rules:
+    - host: argocd.hello-world-domain.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: argocd-server
+                port:
+                  number: 80 
