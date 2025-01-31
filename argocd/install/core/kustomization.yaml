@@ -11,4 +11,4 @@ resources:
 configMapGenerator:
   - name: argocd-values
     envs:
-      - ../../../environments/dev/values.yaml 
+      - ../../environments/dev/values.yaml 
