@@ -4,49 +4,9 @@ kind: Kustomization
 resources:
   - ingress.yaml    # Only include Kubernetes resources here
 
-generatorOptions:
-  disableNameSuffixHash: true    # Prevents the hash suffix
-
 # Values file is only referenced in configMapGenerator
-configMapGenerator:
-  - name: argocd-values
-    envs:
-      - values.yaml
-
 patches:
   - path: ingress-patch.yaml
     target:
       kind: Ingress
       name: argocd-server-ingress
-
-replacements:
-  - source:
-      kind: ConfigMap
-      name: argocd-values
-      fieldPath: data.certificate_arn
-    targets:
-      - select:
-          kind: Ingress
-          name: argocd-server-ingress
-        fieldPaths:
-          - metadata.annotations.alb.ingress.kubernetes.io/certificate-arn
-  - source:
-      kind: ConfigMap
-      name: argocd-values
-      fieldPath: data.waf_acl_arn
-    targets:
-      - select:
-          kind: Ingress
-          name: argocd-server-ingress
-        fieldPaths:
-          - metadata.annotations.alb.ingress.kubernetes.io/waf-acl-arn
-  - source:
-      kind: ConfigMap
-      name: argocd-values
-      fieldPath: data.alb_security_group_id
-    targets:
-      - select:
-          kind: Ingress
-          name: argocd-server-ingress
-        fieldPaths:
-          - metadata.annotations.alb.ingress.kubernetes.io/security-groups
