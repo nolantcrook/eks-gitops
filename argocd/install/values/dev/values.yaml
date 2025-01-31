@@ -1,0 +1,3 @@
+certificate_arn: ${data.aws_acm_certificate.domain.arn}
+waf_acl_arn: ${aws_wafv2_web_acl.main.arn}
+alb_security_group_id: ${aws_security_group.alb.id} 
