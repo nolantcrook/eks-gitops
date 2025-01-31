@@ -4,16 +4,11 @@ metadata:
   name: argocd-server
   namespace: argocd
 spec:
-  type: NodePort
+  type: ClusterIP
   ports:
     - name: http
       port: 80
       targetPort: 8080  # ArgoCD server port
-      protocol: TCP
-    - name: https
-      port: 443              # Exposing the service on port 443 for HTTPS
-      targetPort: 8080       # Backend pod port for HTTPS
-      nodePort: 30443        # NodePort for HTTPS
       protocol: TCP
   selector:
     app.kubernetes.io/name: argocd-server
