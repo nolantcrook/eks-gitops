@@ -4,6 +4,9 @@ kind: Kustomization
 resources:
   - ingress.yaml    # Only include Kubernetes resources here
 
+generatorOptions:
+  disableNameSuffixHash: true    # Prevents the hash suffix
+
 # Values file is only referenced in configMapGenerator
 configMapGenerator:
   - name: argocd-values
