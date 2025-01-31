@@ -12,3 +12,29 @@ configMapGenerator:
   - name: argocd-values
     envs:
       - values.yaml
+
+vars:
+  - name: CERTIFICATE_ARN
+    objref:
+      kind: ConfigMap
+      name: argocd-values
+      apiVersion: v1
+    fieldref:
+      fieldpath: data.certificate_arn
+  - name: WAF_ACL_ARN
+    objref:
+      kind: ConfigMap
+      name: argocd-values
+      apiVersion: v1
+    fieldref:
+      fieldpath: data.waf_acl_arn
+  - name: ALB_SECURITY_GROUP_ID
+    objref:
+      kind: ConfigMap
+      name: argocd-values
+      apiVersion: v1
+    fieldref:
+      fieldpath: data.alb_security_group_id
+
+patchesStrategicMerge:
+  - ingress-patch.yaml
