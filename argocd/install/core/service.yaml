@@ -7,9 +7,8 @@ spec:
   type: NodePort
   ports:
     - name: http
-      port: 80               # Exposing the service on port 80 for HTTP
-      targetPort: 8080       # Backend pod port for HTTP
-      nodePort: 30080        # NodePort for HTTP
+      port: 80
+      targetPort: 8080  # ArgoCD server port
       protocol: TCP
     - name: https
       port: 443              # Exposing the service on port 443 for HTTPS
