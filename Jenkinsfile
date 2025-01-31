@@ -107,15 +107,8 @@ print(secret['token'])"
         stage('Configure ArgoCD Values') {
             steps {
                 script {
-                    // Install jq if not present
                     sh 'apt-get update && apt-get install -y jq'
                     
-                    // Create environments directory if it doesn't exist
-                    sh """
-                        mkdir -p argocd/environments/${params.ENV}
-                    """
-                    
-                    // Fetch and configure ArgoCD values
                     sh """
                         # Fetch parameters from AWS
                         PARAMS=\$(aws ssm get-parameter \
@@ -124,10 +117,10 @@ print(secret['token'])"
                             --query 'Parameter.Value' \
                             --output text)
 
-                        # Parse JSON and create values file
-                        echo "certificate_arn: \$(echo \$PARAMS | jq -r '.certificate_arn')
-waf_acl_arn: \$(echo \$PARAMS | jq -r '.waf_acl_arn')
-alb_security_group_id: \$(echo \$PARAMS | jq -r '.alb_security_group_id')" > argocd/install/ingress/values.yaml
+                        # Parse JSON and create values file with KEY=VALUE format
+                        echo "certificate_arn=\$(echo \$PARAMS | jq -r '.certificate_arn')
+waf_acl_arn=\$(echo \$PARAMS | jq -r '.waf_acl_arn')
+alb_security_group_id=\$(echo \$PARAMS | jq -r '.alb_security_group_id')" > argocd/install/ingress/values.yaml
 
                         echo "Generated values file:"
                         cat argocd/install/ingress/values.yaml
