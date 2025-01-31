@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ingress
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/your-repo/stable-diffusion-gitops.git
+    targetRevision: HEAD
+    path: argocd/install
+    helm:
+      valueFiles:
+        - ../environments/dev/values.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true 

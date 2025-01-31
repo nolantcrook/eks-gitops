@@ -8,9 +8,9 @@ metadata:
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS": 443}]'
     alb.ingress.kubernetes.io/target-type: ip
-    alb.ingress.kubernetes.io/certificate-arn: <your-acm-certificate-arn>
-    alb.ingress.kubernetes.io/waf-acl: <your-waf-acl-arn> # Optional
-    alb.ingress.kubernetes.io/security-groups: <your-alb-security-group-id>
+    alb.ingress.kubernetes.io/certificate-arn: ${certificate_arn}
+    alb.ingress.kubernetes.io/waf-acl-arn: ${waf_acl_arn}
+    alb.ingress.kubernetes.io/security-groups: ${alb_security_group_id}
     alb.ingress.kubernetes.io/backend-protocol: HTTP
     alb.ingress.kubernetes.io/healthcheck-path: /healthz
   spec:

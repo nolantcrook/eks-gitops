@@ -104,6 +104,38 @@ print(secret['token'])"
             }
         }
         
+        stage('Configure ArgoCD Values') {
+            steps {
+                script {
+                    // Install jq if not present
+                    sh 'apt-get update && apt-get install -y jq'
+                    
+                    // Create environments directory if it doesn't exist
+                    sh """
+                        mkdir -p argocd/environments/${params.ENV}
+                    """
+                    
+                    // Fetch and configure ArgoCD values
+                    sh """
+                        # Fetch parameters from AWS
+                        PARAMS=\$(aws ssm get-parameter \
+                            --name "/eks/${params.ENV}/argocd/ingress" \
+                            --with-decryption \
+                            --query 'Parameter.Value' \
+                            --output text)
+
+                        # Parse JSON and create values file
+                        echo "certificate_arn: \$(echo \$PARAMS | jq -r '.certificate_arn')
+waf_acl_arn: \$(echo \$PARAMS | jq -r '.waf_acl_arn')
+alb_security_group_id: \$(echo \$PARAMS | jq -r '.alb_security_group_id')" > argocd/environments/${params.ENV}/values.yaml
+
+                        echo "Generated values file:"
+                        cat argocd/environments/${params.ENV}/values.yaml
+                    """
+                }
+            }
+        }
+        
         stage('Deploy Applications') {
             steps {
                 script {
