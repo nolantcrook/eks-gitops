@@ -9,13 +9,12 @@ spec:
     repoURL: https://github.com/roguewavefunction/stable-diffusion-gitops.git
     targetRevision: HEAD
     path: argocd/install
-    helm:
-      valueFiles:
-        - ../environments/dev/values.yaml
+    kustomize:
+      version: v4.5.7
   destination:
     server: https://kubernetes.default.svc
     namespace: argocd
   syncPolicy:
     automated:
       prune: true
-      selfHeal: true 
+      selfHeal: true
