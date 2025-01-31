@@ -110,6 +110,9 @@ print(secret['token'])"
                     sh 'apt-get update && apt-get install -y jq'
                     
                     sh """
+                        # Create ingress directory if it doesn't exist
+                        mkdir -p argocd/install/ingress
+
                         # Fetch parameters from AWS
                         PARAMS=\$(aws ssm get-parameter \
                             --name "/eks/${params.ENV}/argocd/ingress" \
@@ -124,6 +127,12 @@ alb_security_group_id=\$(echo \$PARAMS | jq -r '.alb_security_group_id')" > argo
 
                         echo "Generated values file:"
                         cat argocd/install/ingress/values.yaml
+
+                        # Verify the file exists and has content
+                        if [ ! -s argocd/install/ingress/values.yaml ]; then
+                            echo "Error: values.yaml is empty or does not exist"
+                            exit 1
+                        fi
                     """
                 }
             }
@@ -133,6 +142,13 @@ alb_security_group_id=\$(echo \$PARAMS | jq -r '.alb_security_group_id')" > argo
             steps {
                 script {
                     sh '''
+                        # Verify values.yaml exists before proceeding
+                        if [ ! -f argocd/install/ingress/values.yaml ]; then
+                            echo "Error: values.yaml not found"
+                            exit 1
+                        fi
+
+                        # Rest of the deployment steps...
                         # Parse APPLICATIONS JSON using Python
                         echo "${APPLICATIONS}" | python3 -c "
 import sys, json

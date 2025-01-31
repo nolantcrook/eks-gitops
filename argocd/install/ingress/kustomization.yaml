@@ -13,28 +13,40 @@ configMapGenerator:
     envs:
       - values.yaml
 
-vars:
-  - name: CERTIFICATE_ARN
-    objref:
-      kind: ConfigMap
-      name: argocd-values
-      apiVersion: v1
-    fieldref:
-      fieldpath: data.certificate_arn
-  - name: WAF_ACL_ARN
-    objref:
-      kind: ConfigMap
-      name: argocd-values
-      apiVersion: v1
-    fieldref:
-      fieldpath: data.waf_acl_arn
-  - name: ALB_SECURITY_GROUP_ID
-    objref:
-      kind: ConfigMap
-      name: argocd-values
-      apiVersion: v1
-    fieldref:
-      fieldpath: data.alb_security_group_id
+patches:
+  - path: ingress-patch.yaml
+    target:
+      kind: Ingress
+      name: argocd-server-ingress
 
-patchesStrategicMerge:
-  - ingress-patch.yaml
+replacements:
+  - source:
+      kind: ConfigMap
+      name: argocd-values
+      fieldPath: data.certificate_arn
+    targets:
+      - select:
+          kind: Ingress
+          name: argocd-server-ingress
+        fieldPaths:
+          - metadata.annotations.alb.ingress.kubernetes.io/certificate-arn
+  - source:
+      kind: ConfigMap
+      name: argocd-values
+      fieldPath: data.waf_acl_arn
+    targets:
+      - select:
+          kind: Ingress
+          name: argocd-server-ingress
+        fieldPaths:
+          - metadata.annotations.alb.ingress.kubernetes.io/waf-acl-arn
+  - source:
+      kind: ConfigMap
+      name: argocd-values
+      fieldPath: data.alb_security_group_id
+    targets:
+      - select:
+          kind: Ingress
+          name: argocd-server-ingress
+        fieldPaths:
+          - metadata.annotations.alb.ingress.kubernetes.io/security-groups
