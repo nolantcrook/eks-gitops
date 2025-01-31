@@ -1,8 +1,0 @@
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: argocd-server-ingress
-  annotations:
-    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:us-west-2:891377073036:certificate/6ec8bad7-c7a5-4041-98fd-27ada6eedc1d
-    alb.ingress.kubernetes.io/waf-acl-arn: arn:aws:wafv2:us-west-2:891377073036:regional/webacl/argocd-waf/0ef8f9b1-f060-40e4-be4c-b242fe9e81d6
-    alb.ingress.kubernetes.io/security-groups: sg-0748e34fca871c31b

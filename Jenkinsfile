@@ -43,6 +43,74 @@ pipeline {
             }
         }
 
+        stage('Update ALB Config') {
+            steps {
+                script {
+                    try {
+                        // Get ALB parameters from SSM
+                        def albParams = sh(
+                            script: """
+                                aws ssm get-parameter \
+                                    --name "/eks/${params.ENV}/alb/config" \
+                                    --with-decryption \
+                                    --query 'Parameter.Value' \
+                                    --output text
+                            """,
+                            returnStdout: true
+                        ).trim()
+
+                        // Parse JSON using Python (consistent with your other stages)
+                        def (albDns, targetGroupArn) = sh(
+                            script: """
+                                echo '${albParams}' | python3 -c "
+import sys, json
+params = json.load(sys.stdin)
+print(params['alb_dns'])
+print(params['target_group_arn'])
+"
+                            """,
+                            returnStdout: true
+                        ).trim().split('\n')
+
+                        // Verify parameters are not empty
+                        if (!albDns || !targetGroupArn) {
+                            error "Failed to get ALB configuration from Parameter Store"
+                        }
+
+                        echo "Updating ALB configuration with DNS: ${albDns}"
+                        echo "Target Group ARN: ${targetGroupArn}"
+
+                        // Update the config file
+                        sh """
+                            # Verify directory exists
+                            mkdir -p apps/ingress/base
+
+                            # Update configuration
+                            cat > apps/ingress/base/alb-config.yaml << EOF
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: alb-config
+  namespace: ingress-nginx
+data:
+  alb_dns: "${albDns}"
+  target_group_arn: "${targetGroupArn}"
+EOF
+
+                            # Verify the file was created
+                            if [ ! -s apps/ingress/base/alb-config.yaml ]; then
+                                echo "Error: alb-config.yaml is empty or does not exist"
+                                exit 1
+                            fi
+                        """
+                    } catch (Exception e) {
+                        echo "Failed to update ALB configuration: ${e.message}"
+                        throw e
+                    }
+                }
+            }
+        }
+
        stage('Install ArgoCD') {
             steps {
                 script {
