@@ -74,7 +74,7 @@ print(secret['token'])"
                         kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
                         
                         # Apply our customizations with GitHub credentials
-                        cat argocd/install/repo.yaml | \
+                        cat argocd/install/core/repo.yaml | \
                         GITHUB_USERNAME='${username}' \
                         GITHUB_TOKEN='${token}' \
                         envsubst | \
