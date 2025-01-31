@@ -7,8 +7,3 @@ resources:
   - repo.yaml
   - service.yaml
 
-# Add configMapGenerator for values
-configMapGenerator:
-  - name: argocd-values
-    envs:
-      - ../../environments/dev/values.yaml 
