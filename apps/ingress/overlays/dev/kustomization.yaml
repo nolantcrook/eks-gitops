@@ -6,6 +6,7 @@ namespace: ingress-nginx
 resources:
 - ../../base
 - ../../ingress-rules
+- alb-config-external-secret.yaml
 
 patchesStrategicMerge:
 - patches.yaml

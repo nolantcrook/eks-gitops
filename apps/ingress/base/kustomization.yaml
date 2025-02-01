@@ -10,4 +10,3 @@ resources:
 - rbac.yaml
 - ingressclass.yaml
 - configmap.yaml
-- alb-config.yaml
