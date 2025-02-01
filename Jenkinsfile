@@ -172,40 +172,6 @@ print(secret['token'])"
             }
         }
         
-        stage('Configure ArgoCD Values') {
-            steps {
-                script {
-                    sh 'apt-get update && apt-get install -y jq'
-                    
-                    sh """
-                        # Create ingress directory if it doesn't exist
-                        mkdir -p argocd/install/ingress
-
-                        # Fetch parameters from AWS
-                        PARAMS=\$(aws ssm get-parameter \
-                            --name "/eks/${params.ENV}/argocd/ingress" \
-                            --with-decryption \
-                            --query 'Parameter.Value' \
-                            --output text)
-
-                        # Parse JSON and create values file with KEY=VALUE format
-                        echo "certificate_arn=\$(echo \$PARAMS | jq -r '.certificate_arn')
-waf_acl_arn=\$(echo \$PARAMS | jq -r '.waf_acl_arn')
-alb_security_group_id=\$(echo \$PARAMS | jq -r '.alb_security_group_id')" > argocd/install/ingress/values.yaml
-
-                        echo "Generated values file:"
-                        cat argocd/install/ingress/values.yaml
-
-                        # Verify the file exists and has content
-                        if [ ! -s argocd/install/ingress/values.yaml ]; then
-                            echo "Error: values.yaml is empty or does not exist"
-                            exit 1
-                        fi
-                    """
-                }
-            }
-        }
-        
         stage('Deploy Applications') {
             steps {
                 script {
