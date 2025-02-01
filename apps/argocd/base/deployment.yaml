@@ -6,12 +6,13 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app: argocd-server
+      app.kubernetes.io/name: argocd-server
   template:
     metadata:
       labels:
-        app: argocd-server
+        app.kubernetes.io/name: argocd-server
     spec:
+      serviceAccountName: argocd-server
       containers:
       - name: argocd-server
         image: quay.io/argoproj/argocd:v2.9.3

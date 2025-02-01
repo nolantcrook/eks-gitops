@@ -9,5 +9,5 @@ spec:
     port: 80
     targetPort: 8080
   selector:
-    app: argocd-server
+    app.kubernetes.io/name: argocd-server
   type: ClusterIP
