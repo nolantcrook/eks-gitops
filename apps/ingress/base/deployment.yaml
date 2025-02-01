@@ -23,9 +23,13 @@ spec:
           - --election-id=ingress-controller-leader
           - --controller-class=k8s.io/ingress-nginx
           - --ingress-class=nginx
+          - --health-port=10254
         ports:
         - name: http
           containerPort: 80
+          protocol: TCP
+        - name: health
+          containerPort: 10254
           protocol: TCP
         env:
           - name: POD_NAME
@@ -39,13 +43,13 @@ spec:
         livenessProbe:
           httpGet:
             path: /healthz
-            port: 10254
+            port: health
           initialDelaySeconds: 10
           periodSeconds: 10
         readinessProbe:
           httpGet:
             path: /healthz
-            port: 10254
+            port: health
           periodSeconds: 10
 
 ---
