@@ -4,7 +4,7 @@ metadata:
   name: ingress-nginx
   namespace: argocd
 spec:
-  project: ingress-nginx-project
+  project: ingress-nginx
   source:
     repoURL: https://github.com/roguewavefunction/stable-diffusion-gitops.git
     targetRevision: HEAD
