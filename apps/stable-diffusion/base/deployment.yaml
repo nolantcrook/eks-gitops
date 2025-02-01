@@ -14,16 +14,19 @@ spec:
     spec:
       containers:
       - name: ubuntu
-        image: ubuntu:latest
-        command: ["/bin/bash", "-c"]
-        args:
-          - |
-            echo "Hello World!"
-            sleep infinity
-        resources:
-          requests:
-            memory: "64Mi"
-            cpu: "100m"
-          limits:
-            memory: "128Mi"
-            cpu: "200m" 
+        image: nginx:alpine
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: html
+          mountPath: /usr/share/nginx/html
+      initContainers:
+      - name: init-html
+        image: busybox
+        command: ['sh', '-c', 'echo "<h1>Hello World!</h1>" > /html/index.html']
+        volumeMounts:
+        - name: html
+          mountPath: /html
+      volumes:
+      - name: html
+        emptyDir: {} 
