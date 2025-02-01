@@ -10,4 +10,4 @@ resources:
 - service.yaml
 - deployment.yaml
 - ingressclass.yaml
-- ingress-rules
+- ingress-rules/
