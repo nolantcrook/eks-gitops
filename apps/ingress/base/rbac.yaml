@@ -90,6 +90,9 @@ rules:
     resources: ["configmaps"]
     resourceNames: ["ingress-controller-leader"]
     verbs: ["get", "update"]
+  - apiGroups: ["coordination.k8s.io"]
+    resources: ["leases"]
+    verbs: ["get", "create", "update"]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
