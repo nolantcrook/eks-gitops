@@ -24,7 +24,6 @@ spec:
           - --election-id=ingress-controller-leader
           - --controller-class=k8s.io/ingress-nginx
           - --ingress-class=nginx
-          - --healthz-port=10254
         ports:
         - name: http
           containerPort: 80
