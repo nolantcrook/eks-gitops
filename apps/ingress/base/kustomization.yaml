@@ -11,3 +11,4 @@ resources:
 - ingressclass.yaml
 - ingress-rules/argocd-ingress-rules.yaml
 - ingress-rules/stable-diffusion-ingress-rules.yaml
+- deployment.yaml
