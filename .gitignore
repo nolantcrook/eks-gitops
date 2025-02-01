@@ -1,4 +1,4 @@
-# Learn more about Jenkins and JENKINS_HOME directory for which this file is
+Learn more about Jenkins and JENKINS_HOME directory for which this file is
 # intended.
 #
 #  http://jenkins-ci.org/
@@ -105,6 +105,6 @@ dev-local/
 *.pem
 *.crt
 *.cert
-*secret*
+# *secret*
 *password*
 *credential*

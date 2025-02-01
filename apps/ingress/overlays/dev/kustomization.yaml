@@ -8,5 +8,6 @@ resources:
 - ../../ingress-rules
 - alb-config-external-secret.yaml
 
+
 patchesStrategicMerge:
 - patches.yaml
