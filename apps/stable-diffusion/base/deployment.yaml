@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: hello-world
+  namespace: stable-diffusion
 spec:
   replicas: 1
   selector:
@@ -13,17 +14,100 @@ spec:
         app: hello-world
     spec:
       containers:
-      - name: ubuntu
-        image: ubuntu:latest
-        command: ["/bin/bash", "-c"]
+      - name: nginx
+        image: nginx:1.25
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: html-content
+          mountPath: /usr/share/nginx/html
+      initContainers:
+      - name: html-generator
+        image: busybox
+        command: ["/bin/sh", "-c"]
         args:
-          - |
-            echo "Hello World!"
-            sleep infinity
-        resources:
-          requests:
-            memory: "64Mi"
-            cpu: "100m"
-          limits:
-            memory: "128Mi"
-            cpu: "200m" 
+        - |
+          cat <<EOF > /html/index.html
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <title>Hello from Stable Diffusion!</title>
+            <style>
+              body {
+                font-family: Arial, sans-serif;
+                margin: 40px;
+                background-color: #f0f0f0;
+              }
+              .container {
+                background-color: white;
+                padding: 20px;
+                border-radius: 8px;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                max-width: 600px;
+                margin: 0 auto;
+              }
+              h1 {
+                color: #333;
+                text-align: center;
+              }
+              p {
+                color: #666;
+                line-height: 1.6;
+              }
+            </style>
+          </head>
+          <body>
+            <div class="container">
+              <h1>🎨 Hello from Stable Diffusion!</h1>
+              <p>If you're seeing this page, your Stable Diffusion deployment is working correctly.</p>
+              <p>Deployment Info:</p>
+              <ul>
+                <li>Namespace: stable-diffusion</li>
+                <li>Pod Name: \$(hostname)</li>
+                <li>Time: \$(date)</li>
+              </ul>
+            </div>
+          </body>
+          </html>
+          EOF
+        volumeMounts:
+        - name: html-content
+          mountPath: /html
+      volumes:
+      - name: html-content
+        emptyDir: {}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hello-world
+  namespace: stable-diffusion
+spec:
+  selector:
+    app: hello-world
+  ports:
+  - port: 80
+    targetPort: 80
+  type: ClusterIP
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: hello-world
+  namespace: stable-diffusion
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  ingressClassName: nginx
+  rules:
+  - http:
+      paths:
+      - path: /stable-diffusion
+        pathType: Prefix
+        backend:
+          service:
+            name: hello-world
+            port:
+              number: 80
