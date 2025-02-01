@@ -43,73 +43,6 @@ pipeline {
             }
         }
 
-        stage('Update ALB Config') {
-            steps {
-                script {
-                    try {
-                        // Get ALB parameters from SSM
-                        def albParams = sh(
-                            script: """
-                                aws ssm get-parameter \
-                                    --name "/eks/${params.ENV}/alb/config" \
-                                    --with-decryption \
-                                    --query 'Parameter.Value' \
-                                    --output text
-                            """,
-                            returnStdout: true
-                        ).trim()
-
-                        // Parse JSON using Python (consistent with your other stages)
-                        def (albDns, targetGroupArn) = sh(
-                            script: """
-                                echo '${albParams}' | python3 -c "
-import sys, json
-params = json.load(sys.stdin)
-print(params['alb_dns'])
-print(params['target_group_arn'])
-"
-                            """,
-                            returnStdout: true
-                        ).trim().split('\n')
-
-                        // Verify parameters are not empty
-                        if (!albDns || !targetGroupArn) {
-                            error "Failed to get ALB configuration from Parameter Store"
-                        }
-
-                        echo "Updating ALB configuration with DNS: ${albDns}"
-                        echo "Target Group ARN: ${targetGroupArn}"
-
-                        // Update the config file
-                        sh """
-                            # Verify directory exists
-                            mkdir -p apps/ingress/base
-
-                            # Update configuration
-                            cat > apps/ingress/base/alb-config.yaml << EOF
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: alb-config
-  namespace: ingress-nginx
-data:
-  alb_dns: "${albDns}"
-  target_group_arn: "${targetGroupArn}"
-EOF
-
-                            # Verify the file was created
-                            if [ ! -s apps/ingress/base/alb-config.yaml ]; then
-                                echo "Error: alb-config.yaml is empty or does not exist"
-                                exit 1
-                            fi
-                        """
-                    } catch (Exception e) {
-                        echo "Failed to update ALB configuration: ${e.message}"
-                        throw e
-                    }
-                }
-            }
-        }
 
        stage('Install ArgoCD') {
             steps {
@@ -176,11 +109,6 @@ print(secret['token'])"
             steps {
                 script {
                     sh '''
-                        # Verify values.yaml exists before proceeding
-                        if [ ! -f argocd/install/ingress/values.yaml ]; then
-                            echo "Error: values.yaml not found"
-                            exit 1
-                        fi
 
                         # Rest of the deployment steps...
                         # Parse APPLICATIONS JSON using Python
@@ -216,59 +144,6 @@ for app_name, namespace in apps.items():
                 }
             }
         }
-        
-        stage('Verify Deployment') {
-            steps {
-                script {
-                    sh """
-                        # Start port-forward
-                        kubectl port-forward svc/argocd-server -n argocd 8085:443 &
-                        PF_PID=\$!
-                        
-                        # Wait for port-forward to establish
-                        sleep 5
-                        
-                        # Try to access ArgoCD server
-                        echo "Checking if ArgoCD server is accessible..."
-                        max_retries=30
-                        count=0
-                        while [ \$count -lt \$max_retries ]; do
-                            if curl -k -s https://localhost:8085 > /dev/null; then
-                                echo "ArgoCD server is up!"
-                                break
-                            fi
-                            echo "Waiting for ArgoCD server... (Attempt \$((count+1))/\$max_retries)"
-                            sleep 10
-                            count=\$((count+1))
-                        done
-                        
-                        if [ \$count -eq \$max_retries ]; then
-                            echo "Failed to connect to ArgoCD server after \$max_retries attempts"
-                            exit 1
-                        fi
-                        
-                        # Clean up port-forward
-                        if [ ! -z "\$PF_PID" ]; then
-                            kill \$PF_PID || true
-                        fi
-                    """
-                    
-                    // Parse APPLICATIONS environment variable using Python
-                    sh '''
-                        echo "${APPLICATIONS}" | python3 -c "
-import sys, json, os
-apps = json.load(sys.stdin)
-for app_name, namespace in apps.items():
-    print(f'Checking deployment {app_name} in namespace {namespace}')
-    status = os.system(f'kubectl rollout status deployment/{app_name} -n {namespace} --timeout=300s')
-    if status != 0:
-        sys.exit(1)
-"
-                    '''
-                }
-            }
-        }
-    }
     
     post {
         always {
