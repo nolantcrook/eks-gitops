@@ -149,7 +149,7 @@ print(secret['token'])"
                         kubectl apply -f -
                         
                         # Apply remaining configurations
-                        kubectl apply -f argocd/install/core/service.yaml
+                        kubectl apply -f apps/argocd/base/service.yaml
                         
                         # Wait for pods...
                         echo "Waiting for ArgoCD pods to start..."
