@@ -1,9 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: alb-config
-  namespace: ingress-nginx
-data:
-  # These values will be populated by your CI/CD pipeline from Parameter Store
-  alb_dns: "${ALB_DNS}"
-  target_group_arn: "${TARGET_GROUP_ARN}" 

@@ -5,8 +5,9 @@ namespace: ingress-nginx
 
 resources:
 - namespace.yaml
-- deployment.yaml
-- service.yaml
 - rbac.yaml
-- ingressclass.yaml
 - configmap.yaml
+- service.yaml
+- deployment.yaml
+- ingressclass.yaml
+- ../ingress-rules

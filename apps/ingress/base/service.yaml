@@ -6,16 +6,12 @@ metadata:
   annotations:
     service.beta.kubernetes.io/aws-load-balancer-type: nlb
 spec:
-  type: NodePort  # Changed to NodePort since we're using ALB
+  type: NodePort
   ports:
     - name: http
       port: 80           # Service port
       targetPort: 80     # Container port
-      nodePort: 30080     # This matches our security group rule
-      protocol: TCP
-    - name: https
-      port: 443          # Service port
-      targetPort: 443    # Container port
+      nodePort: 30080    # This matches our security group rule
       protocol: TCP
   selector:
     app.kubernetes.io/name: ingress-nginx
