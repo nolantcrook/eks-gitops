@@ -144,6 +144,8 @@ for app_name, namespace in apps.items():
                 }
             }
         }
+        
+    }
     
     post {
         always {
