@@ -5,6 +5,7 @@ namespace: stable-diffusion
 
 resources:
 - ../../base
+- ingress.yaml
 
 patchesStrategicMerge:
 - config.yaml 
