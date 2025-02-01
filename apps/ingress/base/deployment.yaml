@@ -14,6 +14,7 @@ spec:
         app.kubernetes.io/name: ingress-nginx
         app.kubernetes.io/component: controller
     spec:
+      serviceAccountName: ingress-nginx
       containers:
       - name: controller
         image: registry.k8s.io/ingress-nginx/controller:v1.8.1
