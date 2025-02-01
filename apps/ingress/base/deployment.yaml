@@ -26,3 +26,4 @@ spec:
               containerPort: 80
             - name: https
               containerPort: 443
+      serviceAccountName: ingress-nginx
