@@ -5,5 +5,5 @@ resources:
   - namespace.yaml
   - configmap.yaml
   - repo.yaml
-  - service.yaml
+
 
