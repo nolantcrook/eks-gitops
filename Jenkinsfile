@@ -47,47 +47,76 @@ pipeline {
        stage('Install ArgoCD') {
             steps {
                 script {
-                    // Get GitHub credentials from AWS Secrets Manager
+                    // Debug AWS Secrets Manager retrieval
+                    sh """
+                        echo "Testing AWS Secrets Manager access..."
+                        aws secretsmanager get-secret-value \
+                            --secret-id github/stable-diff-gitops-secret \
+                            --region ${AWS_REGION} \
+                            --query SecretString \
+                            --output text
+                    """
+                    
+                    // Get GitHub credentials with more explicit error handling
                     def (username, token) = sh(
                         script: '''
-                            aws secretsmanager get-secret-value \
+                            SECRET_JSON=$(aws secretsmanager get-secret-value \
                                 --secret-id github/stable-diff-gitops-secret \
                                 --region ${AWS_REGION} \
                                 --query SecretString \
-                                --output text | \
-                            python3 -c "import sys, json
-secret = json.load(sys.stdin)
-print(secret['username'])
-print(secret['token'])"
+                                --output text)
+                            
+                            if [ $? -ne 0 ]; then
+                                echo "Failed to retrieve secret from AWS"
+                                exit 1
+                            fi
+                            
+                            echo "Secret retrieved successfully"
+                            
+                            echo "$SECRET_JSON" | python3 -c "
+import sys, json
+try:
+    secret = json.load(sys.stdin)
+    print(secret['username'])
+    print(secret['token'])
+except Exception as e:
+    print(f'Error parsing secret: {e}', file=sys.stderr)
+    sys.exit(1)
+"
                         ''',
                         returnStdout: true
                     ).trim().split('\n')
                     
-                    // Debug output (redacted for security)
-                    echo "Creating secret with username: ${username}"
-                    echo "Token length: ${token.length()}"
+                    // Verify we got the values
+                    if (!username?.trim() || !token?.trim()) {
+                        error "Failed to get valid credentials from AWS Secrets Manager"
+                    }
                     
-                    // Create secret directly without using envsubst
+                    echo "Retrieved username length: ${username.length()}"
+                    echo "Retrieved token length: ${token.length()}"
+                    
+                    // Create secret with verified values
                     sh """
+                        echo "Creating new secret..."
                         kubectl delete secret github-repo -n argocd --ignore-not-found
+                        
                         kubectl create secret generic github-repo \
                             -n argocd \
                             --from-literal=type=git \
                             --from-literal=url=https://github.com/roguewavefunction/stable-diffusion-gitops.git \
-                            --from-literal=username='${username}' \
-                            --from-literal=password='${token}'
-
-                        # Add the ArgoCD repository label
+                            --from-literal=username="${username}" \
+                            --from-literal=password="${token}"
+                        
                         kubectl label secret github-repo -n argocd \
-                            argocd.argoproj.io/secret-type=repository
-
-                        # Verify the secret
-                        echo "Secret created:"
+                            argocd.argoproj.io/secret-type=repository --overwrite
+                        
+                        echo "Verifying secret creation..."
                         kubectl get secret github-repo -n argocd
                     """
 
-                    // Restart ArgoCD to pick up new credentials
+                    // Restart ArgoCD
                     sh """
+                        echo "Restarting ArgoCD server..."
                         kubectl rollout restart deployment argocd-server -n argocd
                         kubectl rollout status deployment argocd-server -n argocd
                     """
