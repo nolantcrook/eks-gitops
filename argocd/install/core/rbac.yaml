@@ -11,10 +11,13 @@ metadata:
 rules:
 - apiGroups: ["*"]
   resources: ["*"]
-  verbs: ["get", "list", "watch"]
+  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
 - apiGroups: ["argoproj.io"]
   resources: ["applications", "appprojects", "applicationsets"]
   verbs: ["create", "get", "list", "watch", "update", "delete", "patch"]
+- apiGroups: [""]
+  resources: ["events"]
+  verbs: ["create", "list"]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
@@ -36,8 +39,11 @@ metadata:
   namespace: argocd
 rules:
 - apiGroups: [""]
-  resources: ["secrets", "configmaps"]
-  verbs: ["get", "list", "watch"]
+  resources: ["secrets", "configmaps", "events"]
+  verbs: ["create", "get", "list", "watch", "update", "patch"]
+- apiGroups: ["argoproj.io"]
+  resources: ["applications", "appprojects"]
+  verbs: ["create", "get", "list", "watch", "update", "delete", "patch"]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
