@@ -18,5 +18,7 @@ spec:
         image: quay.io/argoproj/argocd:v2.9.3
         args:
         - /usr/local/bin/argocd-server
+        - --insecure
+        - --disable-auth
         ports:
         - containerPort: 8080 
