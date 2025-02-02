@@ -47,6 +47,15 @@ pipeline {
        stage('Install ArgoCD') {
             steps {
                 script {
+                    // Apply ArgoCD core components first
+                    sh """
+                        echo "Installing ArgoCD core components..."
+                        kubectl apply -k argocd/install/core
+                        
+                        # Wait for ArgoCD server to be ready
+                        kubectl wait --for=condition=available deployment/argocd-server -n argocd --timeout=300s
+                    """
+                    
                     // Get GitHub credentials without debug output
                     def (username, token) = sh(
                         script: '''
