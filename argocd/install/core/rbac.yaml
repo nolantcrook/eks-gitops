@@ -1,73 +1,8 @@
+# Application Controller
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: argocd-server
-  namespace: argocd
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRole
-metadata:
-  name: argocd-server
-rules:
-- apiGroups: ["*"]
-  resources: ["*"]
-  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
-- apiGroups: ["argoproj.io"]
-  resources: ["applications", "appprojects", "applicationsets"]
-  verbs: ["create", "get", "list", "watch", "update", "delete", "patch"]
-- apiGroups: [""]
-  resources: ["events"]
-  verbs: ["create", "list"]
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRole
-metadata:
-  name: argocd-applicationset-controller
-rules:
-- apiGroups:
-  - argoproj.io
-  resources:
-  - applicationsets
-  - applicationsets/status
-  - applicationsets/finalizers
-  verbs:
-  - create
-  - delete
-  - get
-  - list
-  - patch
-  - update
-  - watch
-- apiGroups:
-  - argoproj.io
-  resources:
-  - applications
-  verbs:
-  - create
-  - delete
-  - get
-  - list
-  - patch
-  - update
-  - watch
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
-metadata:
-  name: argocd-applicationset-controller
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: argocd-applicationset-controller
-subjects:
-- kind: ServiceAccount
-  name: argocd-applicationset-controller
-  namespace: argocd
----
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: argocd-applicationset-controller
+  name: argocd-application-controller
   namespace: argocd
 ---
 apiVersion: rbac.authorization.k8s.io/v1
@@ -78,24 +13,6 @@ rules:
 - apiGroups: ["*"]
   resources: ["*"]
   verbs: ["*"]
-- apiGroups: [""]
-  resources: ["secrets", "configmaps", "events", "pods", "services", "deployments", "replicasets", "statefulsets"]
-  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
-- apiGroups: ["apps"]
-  resources: ["deployments", "statefulsets", "daemonsets", "replicasets"]
-  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
-- apiGroups: ["networking.k8s.io"]
-  resources: ["ingresses", "networkpolicies"]
-  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
-- apiGroups: ["argoproj.io"]
-  resources: ["applications", "appprojects", "applicationsets"]
-  verbs: ["*"]
-- apiGroups: [""]
-  resources: ["events"]
-  verbs: ["create", "list", "watch"]
-- apiGroups: ["batch"]
-  resources: ["jobs", "cronjobs"]
-  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
@@ -110,62 +27,34 @@ subjects:
   name: argocd-application-controller
   namespace: argocd
 ---
-apiVersion: rbac.authorization.k8s.io/v1
-kind: Role
+# ApplicationSet Controller
+apiVersion: v1
+kind: ServiceAccount
 metadata:
-  name: argocd-application-controller
+  name: argocd-applicationset-controller
   namespace: argocd
-rules:
-- apiGroups: [""]
-  resources: ["secrets", "configmaps", "events"]
-  verbs: ["*"]
-- apiGroups: ["argoproj.io"]
-  resources: ["applications", "appprojects", "applicationsets"]
-  verbs: ["*"]
-- apiGroups: [""]
-  resources: ["pods", "services", "deployments"]
-  verbs: ["*"]
-- apiGroups: ["apps"]
-  resources: ["deployments", "replicasets", "statefulsets"]
-  verbs: ["*"]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
-kind: RoleBinding
+kind: ClusterRole
 metadata:
-  name: argocd-application-controller
-  namespace: argocd
+  name: argocd-applicationset-controller
+rules:
+- apiGroups: ["argoproj.io"]
+  resources: ["applicationsets", "applicationsets/status", "applicationsets/finalizers"]
+  verbs: ["create", "delete", "get", "list", "patch", "update", "watch"]
+- apiGroups: ["argoproj.io"]
+  resources: ["applications"]
+  verbs: ["create", "delete", "get", "list", "patch", "update", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: argocd-applicationset-controller
 roleRef:
   apiGroup: rbac.authorization.k8s.io
-  kind: Role
-  name: argocd-application-controller
+  kind: ClusterRole
+  name: argocd-applicationset-controller
 subjects:
 - kind: ServiceAccount
-  name: argocd-application-controller
-  namespace: argocd
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: Role
-metadata:
-  name: argocd-server
-  namespace: argocd
-rules:
-- apiGroups: [""]
-  resources: ["secrets", "configmaps", "events"]
-  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
-- apiGroups: ["argoproj.io"]
-  resources: ["applications", "appprojects", "applicationsets"]
-  verbs: ["*"]
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: RoleBinding
-metadata:
-  name: argocd-server
-  namespace: argocd
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: Role
-  name: argocd-server
-subjects:
-- kind: ServiceAccount
-  name: argocd-server
+  name: argocd-applicationset-controller
   namespace: argocd
