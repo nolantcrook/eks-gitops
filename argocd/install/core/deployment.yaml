@@ -19,6 +19,5 @@ spec:
         args:
         - /usr/local/bin/argocd-server
         - --insecure
-        - --disable-auth
         ports:
         - containerPort: 8080 
