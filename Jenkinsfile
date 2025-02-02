@@ -57,7 +57,7 @@ pipeline {
                             --output text
                     """
                     
-                    // Get GitHub credentials with more explicit error handling
+                    // Get GitHub credentials with cleaner output
                     def (username, token) = sh(
                         script: '''
                             SECRET_JSON=$(aws secretsmanager get-secret-value \
@@ -67,18 +67,16 @@ pipeline {
                                 --output text)
                             
                             if [ $? -ne 0 ]; then
-                                echo "Failed to retrieve secret from AWS"
+                                echo "Failed to retrieve secret from AWS" >&2
                                 exit 1
                             fi
                             
-                            echo "Secret retrieved successfully"
-                            
+                            # Parse JSON without extra output
                             echo "$SECRET_JSON" | python3 -c "
 import sys, json
 try:
     secret = json.load(sys.stdin)
-    print(secret['username'])
-    print(secret['token'])
+    print(f'{secret[\"username\"]}\n{secret[\"token\"]}')
 except Exception as e:
     print(f'Error parsing secret: {e}', file=sys.stderr)
     sys.exit(1)
@@ -99,13 +97,14 @@ except Exception as e:
                     sh """
                         echo "Creating new secret..."
                         kubectl delete secret github-repo -n argocd --ignore-not-found
+                        sleep 2  # Wait for deletion to complete
                         
                         kubectl create secret generic github-repo \
                             -n argocd \
                             --from-literal=type=git \
                             --from-literal=url=https://github.com/roguewavefunction/stable-diffusion-gitops.git \
-                            --from-literal=username="${username}" \
-                            --from-literal=password="${token}"
+                            --from-literal=username='${username}' \
+                            --from-literal=password='${token}'
                         
                         kubectl label secret github-repo -n argocd \
                             argocd.argoproj.io/secret-type=repository --overwrite
