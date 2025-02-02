@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: argocd-applicationset-controller
+  namespace: argocd
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: argocd-applicationset-controller
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: argocd-applicationset-controller
+    spec:
+      serviceAccountName: argocd-applicationset-controller
+      containers:
+      - name: argocd-applicationset-controller
+        image: quay.io/argoproj/argocd:v2.9.3
+        command: ["/usr/local/bin/argocd-applicationset-controller"] 
