@@ -72,15 +72,16 @@ pipeline {
                             fi
                             
                             # Parse JSON without extra output
-                            echo "$SECRET_JSON" | python3 -c "
+                            echo "$SECRET_JSON" | python3 -c '
 import sys, json
 try:
     secret = json.load(sys.stdin)
-    print(f'{secret[\"username\"]}\n{secret[\"token\"]}')
+    print(secret["username"])
+    print(secret["token"])
 except Exception as e:
-    print(f'Error parsing secret: {e}', file=sys.stderr)
+    print(f"Error parsing secret: {e}", file=sys.stderr)
     sys.exit(1)
-"
+'
                         ''',
                         returnStdout: true
                     ).trim().split('\n')
