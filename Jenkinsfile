@@ -63,43 +63,21 @@ print(secret['token'])"
                         returnStdout: true
                     ).trim().split('\n')
                     
-                    // Apply ArgoCD installation with GitHub credentials
+                    // After retrieving the credentials
+                    echo "Username: ${username}"
+                    echo "Token length: ${token.length()}"
+                    
+                    // Before applying the repo.yaml
                     sh """
-                        # Install envsubst
-                        apt-get update && apt-get install -y gettext-base
+                        echo "Applying repo.yaml with:"
+                        echo "Username: \$GITHUB_USERNAME"
+                        echo "Token length: \${#GITHUB_TOKEN}"
                         
-                        # Create ArgoCD namespace
-                        kubectl create namespace argocd --dry-run=client -o yaml | kubectl apply -f -
-                        
-                        # Install ArgoCD base components
-                        kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
-                        
-                        # Apply our customizations with GitHub credentials
                         cat argocd/install/core/repo.yaml | \
                         GITHUB_USERNAME='${username}' \
                         GITHUB_TOKEN='${token}' \
                         envsubst | \
                         kubectl apply -f -
-                        
-                        # Apply remaining configurations
-                        kubectl apply -f argocd/install/core/service.yaml
-                        
-                        # Wait for pods...
-                        echo "Waiting for ArgoCD pods to start..."
-                        sleep 30
-                        
-                        # Verify deployments
-                        for deployment in argocd-server argocd-repo-server argocd-redis; do
-                            echo "Waiting for deployment \$deployment to be ready..."
-                            kubectl wait --for=condition=available --timeout=600s deployment/\$deployment -n argocd
-                        done
-                        
-                        # Verify statefulset
-                        echo "Waiting for application controller statefulset to be ready..."
-                        kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=argocd-application-controller -n argocd --timeout=600s
-                        
-                        echo "Final pod status:"
-                        kubectl get pods -n argocd
                     """
                 }
             }
