@@ -4,7 +4,7 @@ metadata:
   name: hello-world
   namespace: argocd
 spec:
-  project: stable-diffusion
+  project: default
   source:
     repoURL: https://github.com/roguewavefunction/stable-diffusion-gitops.git
     targetRevision: HEAD
