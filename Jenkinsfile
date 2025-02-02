@@ -130,10 +130,7 @@ for app_name, namespace in apps.items():
                             echo "Creating namespace: $namespace"
                             kubectl create namespace $namespace --dry-run=client -o yaml | kubectl apply -f -
                         done
-                        
-                        # Create all ArgoCD projects
-                        echo "Applying ArgoCD projects..."
-                        kubectl apply -f argocd/projects/
+
                         
                         # Create all applications
                         echo "Applying ArgoCD applications..."
