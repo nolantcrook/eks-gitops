@@ -9,4 +9,5 @@ data:
   use-proxy-protocol: "false"
   forwarded-for-header: "X-Forwarded-For"
   real-ip-header: "X-Forwarded-For"
-  proxy-real-ip-cidr: "0.0.0.0/0" 
+  proxy-real-ip-cidr: "0.0.0.0/0"
+  ssl-redirect: "false"
