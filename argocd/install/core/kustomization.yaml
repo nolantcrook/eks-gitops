@@ -5,10 +5,3 @@ namespace: argocd
 resources:
 - namespace.yaml
 - https://raw.githubusercontent.com/argoproj/argo-cd/v2.9.3/manifests/install.yaml
-
-# Remove the patches section since we don't need to patch anything yet
-
-# Only add patches if you need to customize specific settings
-patchesStrategicMerge:
-- patches/configmap-patch.yaml  # Only if you need custom settings
-
