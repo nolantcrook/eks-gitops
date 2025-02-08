@@ -19,3 +19,9 @@ patches:
     kind: Secret
     name: argocd-secret
   path: patches/secret-patch.yaml
+- target:
+    group: ""
+    version: v1
+    kind: ConfigMap
+    name: argocd-cmd-params-cm
+  path: patches/argocd-cmd-params-cm.yaml
