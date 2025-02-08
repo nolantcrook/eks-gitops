@@ -48,7 +48,7 @@ pipeline {
                 script {
                     sh """
                         echo "Installing ArgoCD core components..."
-                        kubectl apply -k argocd/install/core
+                        kubectl apply -k argocd/overlays/dev
                         
                         # Wait for ArgoCD server to be ready
                         kubectl wait --for=condition=available deployment/argocd-server -n argocd --timeout=300s
