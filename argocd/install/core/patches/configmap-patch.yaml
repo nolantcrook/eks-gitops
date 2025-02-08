@@ -4,8 +4,7 @@ metadata:
   name: argocd-cm
   namespace: argocd
 data:
-  # Only include settings you want to override
-  repositories: |
-    - url: https://github.com/nolantcrook/stable-diffusion-gitops.git
-      type: git
-  server.insecure: "true" 
+  url: https://github.com/nolantcrook/stable-diffusion-gitops
+  server.insecure: "true"
+  admin.enabled: "true"
+  application.instanceLabelKey: argocd.argoproj.io/instance 
