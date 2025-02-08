@@ -8,7 +8,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/roguewavefunction/stable-diffusion-gitops.git
+    repoURL: https://github.com/nolantcrook/stable-diffusion-gitops.git
     targetRevision: HEAD
     path: argocd/install/core
   destination:

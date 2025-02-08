@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-cm
+  namespace: argocd
+data:
+  # Only include settings you want to override
+  repositories: |
+    - url: https://github.com/nolantcrook/stable-diffusion-gitops.git
+      type: git
+  server.insecure: "true" 

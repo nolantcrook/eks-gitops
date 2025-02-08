@@ -3,10 +3,10 @@ kind: Kustomization
 namespace: argocd
 
 resources:
-  - namespace.yaml
-  - configmap.yaml
-  - service.yaml
-  - deployment.yaml
-  - applicationset.yaml
-  - rbac.yaml
+- namespace.yaml
+- https://raw.githubusercontent.com/argoproj/argo-cd/v2.9.3/manifests/install.yaml
+
+# Only add patches if you need to customize specific settings
+patchesStrategicMerge:
+- patches/configmap-patch.yaml  # Only if you need custom settings
 

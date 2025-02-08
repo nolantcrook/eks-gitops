@@ -6,9 +6,9 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/roguewavefunction/stable-diffusion-gitops.git
+    repoURL: https://github.com/nolantcrook/stable-diffusion-gitops.git
     targetRevision: HEAD
-    path: apps/ingress/base
+    path: apps/ingress/overlays/dev
   destination:
     server: https://kubernetes.default.svc
     namespace: ingress-nginx
@@ -17,4 +17,4 @@ spec:
       prune: true
       selfHeal: true
     syncOptions:
-    - CreateNamespace=true 
+      - CreateNamespace=true 
