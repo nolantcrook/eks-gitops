@@ -7,4 +7,5 @@ data:
   url: https://github.com/nolantcrook/stable-diffusion-gitops
   server.insecure: "true"
   admin.enabled: "true"
-  application.instanceLabelKey: argocd.argoproj.io/instance 
+  application.instanceLabelKey: argocd.argoproj.io/instance
+  server.secretkey: $argocd-secret:server.secretkey 
