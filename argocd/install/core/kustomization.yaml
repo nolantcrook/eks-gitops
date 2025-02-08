@@ -8,7 +8,7 @@ resources:
 - argocd-secret.yaml
 
 # Replace patchesStrategicMerge with patchesJson6902
-patchesJson6902:
+patches:
 - target:
     group: ""
     version: v1
