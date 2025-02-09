@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: game-2048
+  namespace: game-2048
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+  - host: 2048.hello-world-domain.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: game-2048
+            port:
+              number: 80 
