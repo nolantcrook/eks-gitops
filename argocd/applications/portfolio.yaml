@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: 'https://github.com/your-repo/stable-diffusion-gitops'
+    repoURL: https://github.com/nolantcrook/stable-diffusion-gitops.git
     targetRevision: HEAD
     path: apps/resume/overlays/dev
   destination:
