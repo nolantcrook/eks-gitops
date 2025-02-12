@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: portfolio
+  namespace: portfolio
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: portfolio
+  template:
+    metadata:
+      labels:
+        app: portfolio
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:alpine
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: html
+          mountPath: /usr/share/nginx/html
+      initContainers:
+      - name: init-html
+        image: busybox
+        command: ['sh', '-c', 'cp /config/resume.html /html/index.html']
+        volumeMounts:
+        - name: config-volume
+          mountPath: /config
+        - name: html
+          mountPath: /html
+      volumes:
+      - name: html
+        emptyDir: {}
+      - name: config-volume
+        configMap:
+          name: resume-html 

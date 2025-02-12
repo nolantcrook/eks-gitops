@@ -1,0 +1,130 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: resume-html
+  namespace: resume
+data:
+  resume.html: |
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Nolan Crook - Resume</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #f8f9fa;
+            }
+            .container {
+                max-width: 900px;
+                margin: 40px auto;
+                background: white;
+                padding: 30px;
+                border-radius: 10px;
+                box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            }
+            h1, h2, h3 {
+                color: #343a40;
+            }
+            .section {
+                margin-bottom: 30px;
+            }
+            .contact-info {
+                font-size: 1.1em;
+            }
+            .social-links a {
+                margin-right: 15px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <header class="text-center">
+                <h1>Nolan Crook</h1>
+                <p class="contact-info">📍 Salt Lake City, UT | 📧 nolan@nolancrook.com | 📞 (385) 309–0171</p>
+            </header>
+            
+            <section class="section">
+                <h2>Highlights</h2>
+                <ul>
+                    <li>10 years of ML/AI + Data Engineering (7 years in the cloud)</li>
+                    <li>BS/MS Engineering + MBA, Published Academic Author</li>
+                    <li>12x AWS Certified – All Active</li>
+                    <li>Tech Stack: AWS, Python, PyTorch, SQL, Kubernetes, Docker, Terraform, Serverless, CI/CD, EMR</li>
+                </ul>
+            </section>
+            
+            <section class="section">
+                <h2>Experience</h2>
+                <h3>Senior ML Engineer - Nike (Oct 2024 – Present)</h3>
+                <ul>
+                    <li>Deployed custom Stable Diffusion model to AWS, paired with InvokeAI front-end</li>
+                    <li>Migrated GenAI solution to fully CI/CD with Jenkins/Github/Terraform</li>
+                    <li>Reduced daily cloud spend by 15%</li>
+                </ul>
+
+                <h3>ML Platform Lead - Duke Energy (Oct 2021 – Oct 2024)</h3>
+                <ul>
+                    <li>Created end-to-end ML forecasting product using AWS, Python, Terraform, CI/CD, SQL</li>
+                    <li>Cut cloud ML processing costs by 50%</li>
+                    <li>Led a team of four engineers, managing daily standups and biweekly sprints</li>
+                </ul>
+                <h3>Machine Learning Engineer - Traeger Grills (Apr 2020 – Oct 2021)</h3>
+                <ul>
+                    <li>Analyzed IoT data from 500k+ devices using neural networks trained with PyTorch.</li>
+                    <li>Performed clustering and classification of time series data using convolutional neural networks.</li>
+                    <li>Managed DevOps, CI/CD infrastructure, automation, deployment, and monitoring for 1200+ processes.</li>
+                    <li>Designed and deployed ML pipelines utilizing AWS services such as Lambda, S3, Athena, Glue, and SageMaker.</li>
+                </ul>
+                <h3>Manager of Engineering - Sensable Technologies (Jun 2017 – Jun 2018)</h3>
+                <ul>
+                    <li>Increased R&D output by 500% by designing and implementing robotic automation.</li>
+                    <li>Implemented and designed R&D strategy using statistical and ML methods on large datasets.</li>
+                    <li>Provided KPIs and metrics for venture capital funding coordination with executives.</li>
+                </ul>
+                <h3>Research Engineer - Brigham Young University (May 2015 – Jul 2017)</h3>
+                <ul>
+                    <li>Invented new manufacturing methods improving material properties of high-strength steel.</li>
+                    <li>Developed ML models to predict manufacturing parameters leading to optimized outcomes.</li>
+                    <li>Processed and analyzed millions of data points for statistical research insights.</li>
+                </ul>
+
+                <h3>Mechanical Engineer - Extia (May 2014 – Aug 2014)</h3>
+                <ul>
+                    <li>Designed CFD meshes for heat transfer analysis of deep-sea petroleum pipelines.</li>
+                    <li>Performed stress analysis of nuclear power reactor brackets using FEA meshes.</li>
+                </ul>
+
+                <h3>Aerospace Research Engineer - Boeing/BYU Partnership (Feb 2013 – Jan 2014)</h3>
+                <ul>
+                    <li>Optimized UAV component designs, reducing processing time from 24 hours to 20 minutes.</li>
+                </ul>
+            </section>
+            
+            <section class="section">
+                <h2>Education</h2>
+                <ul>
+                    <li><strong>Master of Science in Mechanical Engineering</strong> - Brigham Young University, 2021</li>
+                    <li><strong>Master of Business Administration</strong> - Brigham Young University, 2021</li>
+                    <li><strong>Bachelor of Science in Mechanical Engineering</strong> - Brigham Young University, 2015</li>
+                </ul>
+            </section>
+            
+            <section class="section">
+                <h2>Certifications</h2>
+                <ul>
+                    <li>12x AWS Certified (Including All Professional Certifications) – Active as of 2024</li>
+                    <li>HashiCorp Certified: Terraform Associate (2022)</li>
+                </ul>
+            </section>
+            
+            <section class="section">
+                <h2>Publications</h2>
+                <p><strong>Control of Post-Weld Fracture Toughness in Friction Stir Processed X-80 HSLA Steel</strong> - Published in Engineering Fracture Mechanics (2022)</p>
+                <p><a href="https://www.sciencedirect.com/science/article/pii/S0013794422003198?dgcid=author" target="_blank">Read Publication</a></p>
+            </section>
+        </div>
+    </body>
+    </html>
