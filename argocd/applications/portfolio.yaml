@@ -8,10 +8,10 @@ spec:
   source:
     repoURL: https://github.com/nolantcrook/stable-diffusion-gitops.git
     targetRevision: HEAD
-    path: apps/resume/overlays/dev
+    path: apps/portfolio/overlays/dev
   destination:
-    server: 'https://kubernetes.default.svc'
-    namespace: resume
+    server: https://kubernetes.default.svc
+    namespace: portfolio
   syncPolicy:
     automated:
       prune: true
