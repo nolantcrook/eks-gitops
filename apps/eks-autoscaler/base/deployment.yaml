@@ -18,15 +18,16 @@ spec:
       serviceAccountName: cluster-autoscaler
       containers:
       - name: cluster-autoscaler
-        image: k8s.gcr.io/autoscaling/cluster-autoscaler:v1.22.2
-        command:
-          - ./cluster-autoscaler
-          - --v=4
-          - --stderrthreshold=info
-          - --cloud-provider=aws
-          - --skip-nodes-with-local-storage=false
-          - --expander=least-waste
-          - --nodes=1:10:eks-x86-spot
+        image: public.ecr.aws/eks/aws-cluster-autoscaler:v1.22.2
+    command:
+      - ./cluster-autoscaler
+      - --v=4
+      - --stderrthreshold=info
+      - --cloud-provider=aws
+      - --skip-nodes-with-local-storage=false
+      - --expander=least-waste
+      - --cluster-name=eks-gpu-dev
+
         resources:
           limits:
             cpu: 100m
