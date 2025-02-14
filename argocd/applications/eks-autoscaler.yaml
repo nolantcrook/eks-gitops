@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: eks-autoscaler
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/nolantcrook/stable-diffusion-gitops.git'
+    targetRevision: HEAD
+    path: apps/eks-autoscaler/base
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: kube-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
