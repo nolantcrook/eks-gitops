@@ -19,15 +19,14 @@ spec:
       containers:
       - name: cluster-autoscaler
         image: public.ecr.aws/eks/aws-cluster-autoscaler:v1.22.2
-    command:
-      - ./cluster-autoscaler
-      - --v=4
-      - --stderrthreshold=info
-      - --cloud-provider=aws
-      - --skip-nodes-with-local-storage=false
-      - --expander=least-waste
-      - --cluster-name=eks-gpu-dev
-
+        command:
+          - ./cluster-autoscaler
+          - --v=4
+          - --stderrthreshold=info
+          - --cloud-provider=aws
+          - --skip-nodes-with-local-storage=false
+          - --expander=least-waste
+          - --cluster-name=eks-gpu-dev
         resources:
           limits:
             cpu: 100m
