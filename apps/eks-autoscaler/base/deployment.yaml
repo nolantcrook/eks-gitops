@@ -29,7 +29,9 @@ spec:
           - name: AWS_ROLE_ARN
             value: arn:aws:iam::891377073036:role/eks-cluster-autoscaler
         command:
-          - echo "hello world"
+          - tail
+          - -f
+          - /dev/null
         resources:
           limits:
             cpu: 100m
