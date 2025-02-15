@@ -33,7 +33,6 @@ spec:
           - --v=4
           - --node-group-auto-discovery=asg:tag=k8s.io/cluster-autoscaler/enabled,k8s.io/cluster-autoscaler/eks-gpu-dev
           - --stderrthreshold=info
-          - --cloud-provider=aws
           - --expander=least-waste
           - --cluster-name=eks-gpu-dev
         resources:
