@@ -28,6 +28,14 @@ spec:
             value: /var/run/secrets/eks.amazonaws.com/serviceaccount/token
           - name: AWS_ROLE_ARN
             value: arn:aws:iam::891377073036:role/eks-cluster-autoscaler
+        command:
+          - ./cluster-autoscaler
+          - --v=4
+          - --node-group-auto-discovery=asg:tag=k8s.io/cluster-autoscaler/enabled,k8s.io/cluster-autoscaler/eks-gpu-dev
+          - --stderrthreshold=info
+          - --cloud-provider=aws
+          - --expander=least-waste
+          - --cluster-name=eks-gpu-dev
         resources:
           limits:
             cpu: 100m
