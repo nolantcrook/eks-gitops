@@ -19,13 +19,14 @@ spec:
       containers:
       - name: cluster-autoscaler
         image: registry.k8s.io/autoscaling/cluster-autoscaler:v1.32.0
+        env:
+        - name: AWS_REGION
+          value: us-west-2
         command:
           - ./cluster-autoscaler
           - --v=4
           - --stderrthreshold=info
           - --cloud-provider=aws
-          - --aws-region=us-west-2
-          - --skip-nodes-with-local-storage=false
           - --expander=least-waste
           - --cluster-name=eks-gpu-dev
         resources:
