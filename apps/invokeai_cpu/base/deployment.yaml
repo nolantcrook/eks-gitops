@@ -24,8 +24,9 @@ spec:
         args: ["--web", "--host", "0.0.0.0", "--port", "9090"]
         resources:
           requests:
-            memory: "512Mi"
-            cpu: "500m"
+            memory: "8Gi"
+            cpu: "2"
           limits:
-            memory: "1Gi"
-            cpu: "1"
+            memory: "16Gi"
+            cpu: "4"
+
