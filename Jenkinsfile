@@ -105,6 +105,34 @@ except Exception as e:
             }
         }
         
+        stage('Deploy Ingress') {
+            steps {
+                script {
+                    sh """
+                        echo "Deploying Ingress components..."
+                        kubectl apply -k ingress/overlays/dev
+                        
+                        # Wait for Ingress controller to be ready
+                        kubectl wait --for=condition=available deployment/ingress-nginx-controller -n ingress-nginx --timeout=300s
+                    """
+                }
+            }
+        }
+
+        stage('Deploy Autoscaler') {
+            steps {
+                script {
+                    sh """
+                        echo "Deploying Cluster Autoscaler..."
+                        kubectl apply -k eks-autoscaler/base
+                        
+                        # Wait for Autoscaler to be ready
+                        kubectl wait --for=condition=available deployment/cluster-autoscaler -n kube-system --timeout=300s
+                    """
+                }
+            }
+        }
+        
         stage('Deploy Applications') {
             steps {
                 script {
