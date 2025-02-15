@@ -24,8 +24,8 @@ spec:
             value: us-west-2
           - name: AWS_STS_REGIONAL_ENDPOINTS
             value: regional
-          - name: AWS_WEB_IDENTITY_TOKEN_FILE
-            value: /var/run/secrets/eks.amazonaws.com/serviceaccount/token
+          # - name: AWS_WEB_IDENTITY_TOKEN_FILE
+          #   value: /var/run/secrets/eks.amazonaws.com/serviceaccount/token
           - name: AWS_ROLE_ARN
             value: arn:aws:iam::891377073036:role/eks-cluster-autoscaler
         command:
@@ -43,15 +43,15 @@ spec:
           requests:
             cpu: 100m
             memory: 300Mi
-        volumeMounts:
-          - name: aws-iam-token
-            mountPath: /var/run/secrets/eks.amazonaws.com/serviceaccount
-            readOnly: true
-      volumes:
-        - name: aws-iam-token
-          projected:
-            sources:
-              - serviceAccountToken:
-                  audience: sts.amazonaws.com
-                  expirationSeconds: 86400
-                  path: token
+      #   volumeMounts:
+      #     - name: aws-iam-token
+      #       mountPath: /var/run/secrets/eks.amazonaws.com/serviceaccount
+      #       readOnly: true
+      # volumes:
+      #   - name: aws-iam-token
+      #     projected:
+      #       sources:
+      #         - serviceAccountToken:
+      #             audience: sts.amazonaws.com
+      #             expirationSeconds: 86400
+      #             path: token
