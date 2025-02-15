@@ -29,9 +29,8 @@ spec:
           - name: AWS_ROLE_ARN
             value: arn:aws:iam::891377073036:role/eks-cluster-autoscaler
         command:
-          - tail
-          - -f
-          - /dev/null
+          - sleep
+          - infinity
         resources:
           limits:
             cpu: 100m
