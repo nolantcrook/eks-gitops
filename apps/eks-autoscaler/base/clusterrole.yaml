@@ -21,7 +21,7 @@ rules:
   verbs: ["watch", "list", "get", "update"]
 - apiGroups: [""]
   resources: ["namespaces"]
-  verbs: ["list"]
+  verbs: ["list", "watch"]
 - apiGroups: [""]
   resources: ["pods", "services", "replicationcontrollers", "persistentvolumeclaims", "persistentvolumes"]
   verbs: ["list", "watch"]
