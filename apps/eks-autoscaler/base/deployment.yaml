@@ -24,8 +24,6 @@ spec:
             value: us-west-2
           - name: AWS_STS_REGIONAL_ENDPOINTS
             value: regional
-          - name: AWS_WEB_IDENTITY_TOKEN_FILE
-            value: /var/run/secrets/eks.amazonaws.com/serviceaccount/token
         command:
           - ./cluster-autoscaler
           - --v=4
