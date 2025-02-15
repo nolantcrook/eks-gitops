@@ -24,6 +24,7 @@ spec:
           - --v=4
           - --stderrthreshold=info
           - --cloud-provider=aws
+          - --aws-region=us-west-2
           - --skip-nodes-with-local-storage=false
           - --expander=least-waste
           - --cluster-name=eks-gpu-dev
