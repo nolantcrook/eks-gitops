@@ -40,3 +40,10 @@ rules:
 - apiGroups: ["coordination.k8s.io"]
   resources: ["leases"]
   verbs: ["create", "get", "list", "update"]
+- apiGroups: ["storage.k8s.io"]
+  resources: ["csinodes", "csidrivers", "csistoragecapacities"]
+  verbs: ["watch", "list", "get"]
+
+- apiGroups: ["batch", "extensions"]
+  resources: ["jobs"]
+  verbs: ["get", "list", "watch", "patch"]
