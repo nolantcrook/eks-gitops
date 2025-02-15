@@ -41,7 +41,7 @@ rules:
   resources: ["leases"]
   verbs: ["create", "get", "list", "update"]
 - apiGroups: ["storage.k8s.io"]
-  resources: ["csinodes", "csidrivers", "csistoragecapacities"]
+  resources: ["csinodes", "csidrivers", "csistoragecapacities", "volumeattachments"]
   verbs: ["watch", "list", "get"]
 
 - apiGroups: ["batch", "extensions"]
