@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: invokeai-deployment
+  namespace: invokeai
+  labels:
+    app: invokeai
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: invokeai
+  template:
+    metadata:
+      labels:
+        app: invokeai
+    spec:
+      containers:
+      - name: invokeai
+        image: mauwii/invokeai:latest
+        ports:
+        - containerPort: 9090
+        command: ["invokeai"]
+        args: ["--web", "--host", "0.0.0.0", "--port", "9090"]
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "500m"
+          limits:
+            memory: "1Gi"
+            cpu: "1"

@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: invokeai
+  namespace: invokeai
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+  - host: invokeai.hello-world-domain.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: invokeai
+            port:
+              number: 80 
