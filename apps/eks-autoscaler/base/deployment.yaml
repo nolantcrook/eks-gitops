@@ -28,10 +28,6 @@ spec:
             value: /var/run/secrets/eks.amazonaws.com/serviceaccount/token
           - name: AWS_ROLE_ARN
             value: arn:aws:iam::891377073036:role/eks-cluster-autoscaler
-        command:
-          - /bin/sh
-          - -c
-          - while true; do sleep 3600; done
         resources:
           limits:
             cpu: 100m
