@@ -27,7 +27,7 @@ spec:
           - name: AWS_WEB_IDENTITY_TOKEN_FILE
             value: /var/run/secrets/eks.amazonaws.com/serviceaccount/token
           - name: AWS_ROLE_ARN
-            value: arn:aws:iam::123456789012:role/YourRoleName
+            value: arn:aws:iam::891377073036:role/eks-cluster-autoscaler
         command:
           - ./cluster-autoscaler
           - --v=4
