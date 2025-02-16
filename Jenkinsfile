@@ -110,7 +110,9 @@ except Exception as e:
                 script {
                     sh """
                         echo "Deploying Ingress components..."
-                        kubectl apply -k ingress/overlays/dev
+                        pwd
+                        ls
+                        kubectl apply -k apps/ingress/overlays/dev
                         
                         # Wait for Ingress controller to be ready
                         kubectl wait --for=condition=available deployment/ingress-nginx-controller -n ingress-nginx --timeout=300s
@@ -124,7 +126,7 @@ except Exception as e:
                 script {
                     sh """
                         echo "Deploying Cluster Autoscaler..."
-                        kubectl apply -k eks-autoscaler/base
+                        kubectl apply -k apps/eks-autoscaler/base
                         
                         # Wait for Autoscaler to be ready
                         kubectl wait --for=condition=available deployment/cluster-autoscaler -n kube-system --timeout=300s
