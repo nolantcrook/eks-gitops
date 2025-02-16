@@ -15,6 +15,8 @@ spec:
       labels:
         app: invokeai
     spec:
+      nodeSelector:
+        storage: high # Ensures pod is scheduled on nodes with this label
       containers:
       - name: invokeai
         image: mauwii/invokeai:latest
@@ -26,8 +28,11 @@ spec:
           requests:
             memory: "4Gi"
             cpu: "1"
+            ephemeral-storage: "2Gi" # Requesting 2 GiB of ephemeral storage
           limits:
             memory: "8Gi"
-            cpu: "1"
+            cpu: "2"
+            ephemeral-storage: "4Gi" # Limiting to 4 GiB of ephemeral storage
+
 
 
