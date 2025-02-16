@@ -24,6 +24,9 @@ spec:
         - containerPort: 9090
         command: ["invokeai"]
         args: ["--web", "--host", "0.0.0.0", "--port", "9090"]
+        env:
+        - name: USE_CPU
+          value: "true" # Example environment variable to force CPU usage
         resources:
           requests:
             memory: "4Gi"
