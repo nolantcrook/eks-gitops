@@ -23,7 +23,7 @@ spec:
         ports:
         - containerPort: 9090
         command: ["invokeai"]
-        args: ["--web", "--host", "0.0.0.0", "--port", "9090"]
+        args: ["--web", "--host", "https://invokeai.hello-world-domain.com", "--port", "9090"]
         env:
         - name: USE_CPU
           value: "true" # Example environment variable to force CPU usage
