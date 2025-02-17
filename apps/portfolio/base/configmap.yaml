@@ -25,17 +25,31 @@ data:
                 border-radius: 10px;
                 box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
             }
-            h1, h2, h3 {
-                color: #343a40;
+            .hero-section {
+                height: 400px;
+                background: url('https://source.unsplash.com/1600x900/?technology,cloud') no-repeat center center/cover;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                text-align: center;
+                color: white;
             }
-            .section {
-                margin-bottom: 30px;
+            .hero-content {
+                background: rgba(0, 0, 0, 0.6);
+                padding: 20px;
+                border-radius: 10px;
             }
-            .contact-info {
-                font-size: 1.1em;
+            .dark-mode {
+                background-color: #121212;
+                color: #ffffff;
             }
-            .social-links a {
-                margin-right: 15px;
+            .dark-mode .container {
+                background: #1e1e1e;
+                color: white;
+                box-shadow: none;
+            }
+            .dark-mode .navbar {
+                background: #343a40 !important;
             }
         </style>
     </head>
@@ -62,114 +76,55 @@ data:
                         </li>
                     </ul>
                 </div>
+                <button class="btn btn-dark ms-auto" id="darkModeToggle">🌙</button>
             </div>
         </nav>
+        <header class="hero-section">
+            <div class="hero-content">
+                <h1 class="display-4">Nolan Crook</h1>
+                <p class="lead">Machine Learning Engineer | Cloud Specialist | AWS 12x Certified</p>
+                <a href="resume.html" class="btn btn-primary btn-lg">View Resume</a>
+            </div>
+        </header>
         <div class="container">
-            <header class="text-center">
-                <h1>Nolan Crook</h1>
-                <p class="contact-info">📍 Salt Lake City, UT | 📧 nolan@nolancrook.com | 📞 (385) 309–0171</p>
-            </header>
-            
             <section id="projects" class="section">
-                <h2>Projects</h2>
-                <p>Details about your projects can go here.</p>
+                <h2 class="text-center">Projects</h2>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="card">
+                            <img src="https://source.unsplash.com/400x300/?ai,technology" class="card-img-top" alt="Project Image">
+                            <div class="card-body">
+                                <h5 class="card-title">AI Image Generation</h5>
+                                <p class="card-text">Developed a Stable Diffusion model with InvokeAI, deployed on AWS.</p>
+                                <a href="#" class="btn btn-primary">View Project</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </section>
-            
-            <section id="contact" class="section">
-                <h2>Contact</h2>
-                <p>Contact form or details can go here.</p>
+            <section id="contact" class="section text-center">
+                <h2>Contact Me</h2>
+                <p>Have a question or want to work together?</p>
+                <form>
+                    <div class="mb-3">
+                        <input type="text" class="form-control" placeholder="Your Name">
+                    </div>
+                    <div class="mb-3">
+                        <input type="email" class="form-control" placeholder="Your Email">
+                    </div>
+                    <div class="mb-3">
+                        <textarea class="form-control" rows="4" placeholder="Your Message"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-success">Send Message</button>
+                </form>
             </section>
         </div>
+        <script>
+            const toggle = document.getElementById('darkModeToggle');
+            toggle.addEventListener('click', () => {
+                document.body.classList.toggle('dark-mode');
+            });
+        </script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     </body>
     </html>
-
-  resume.html: |
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Nolan Crook - Resume</title>
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-        <style>
-            body {
-                font-family: Arial, sans-serif;
-                background-color: #f8f9fa;
-            }
-            .container {
-                max-width: 900px;
-                margin: 40px auto;
-                background: white;
-                padding: 30px;
-                border-radius: 10px;
-                box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-            }
-            h1, h2, h3 {
-                color: #343a40;
-            }
-            .section {
-                margin-bottom: 30px;
-            }
-            .contact-info {
-                font-size: 1.1em;
-            }
-            .social-links a {
-                margin-right: 15px;
-            }
-        </style>
-    </head>
-    <body>
-        <div class="container">
-            <header class="text-center">
-                <h1>Nolan Crook</h1>
-                <p class="contact-info">📍 Salt Lake City, UT | 📧 nolan@nolancrook.com | 📞 (385) 309–0171</p>
-            </header>
-            
-            <section class="section">
-                <h2>Highlights</h2>
-                <ul>
-                    <li>10 years of ML/AI + Data Engineering (7 years in the cloud)</li>
-                    <li>BS/MS Engineering + MBA, Published Academic Author</li>
-                    <li>12x AWS Certified – All Active</li>
-                    <li>Tech Stack: AWS, Python, PyTorch, SQL, Kubernetes, Docker, Terraform, Serverless, CI/CD, EMR</li>
-                </ul>
-            </section>
-            
-            <section class="section">
-                <h2>Experience</h2>
-                <h3>Senior ML Engineer - Nike (Oct 2024 – Present)</h3>
-                <ul>
-                    <li>Deployed custom Stable Diffusion model to AWS, paired with InvokeAI front-end</li>
-                    <li>Migrated GenAI solution to fully CI/CD with Jenkins/Github/Terraform</li>
-                    <li>Reduced daily cloud spend by 15%</li>
-                </ul>
-                <!-- Add more experience as needed -->
-            </section>
-            
-            <section class="section">
-                <h2>Education</h2>
-                <ul>
-                    <li><strong>Master of Science in Mechanical Engineering</strong> - Brigham Young University, 2021</li>
-                    <li><strong>Master of Business Administration</strong> - Brigham Young University, 2021</li>
-                    <li><strong>Bachelor of Science in Mechanical Engineering</strong> - Brigham Young University, 2015</li>
-                </ul>
-            </section>
-            
-            <section class="section">
-                <h2>Certifications</h2>
-                <ul>
-                    <li>12x AWS Certified (Including All Professional Certifications) – Active as of 2024</li>
-                    <li>HashiCorp Certified: Terraform Associate (2022)</li>
-                </ul>
-            </section>
-            
-            <section class="section">
-                <h2>Publications</h2>
-                <p><strong>Control of Post-Weld Fracture Toughness in Friction Stir Processed X-80 HSLA Steel</strong> - Published in Engineering Fracture Mechanics (2022)</p>
-                <p><a href="https://www.sciencedirect.com/science/article/pii/S0013794422003198?dgcid=author" target="_blank">Read Publication</a></p>
-            </section>
-        </div>
-    </body>
-    </html>
-
