@@ -21,15 +21,15 @@ spec:
         volumeMounts:
         - name: html
           mountPath: /usr/share/nginx/html
-    initContainers:
+      initContainers:
       - name: init-html
         image: busybox
         command: ['sh', '-c', 'cp /config/* /html/ && chown -R nginx:nginx /html']
         volumeMounts:
-          - name: config-volume
-            mountPath: /config
-          - name: html
-            mountPath: /html
+        - name: config-volume
+          mountPath: /config
+        - name: html
+          mountPath: /html
       volumes:
       - name: html
         emptyDir: {}
