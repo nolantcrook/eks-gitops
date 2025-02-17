@@ -4,7 +4,7 @@ metadata:
   name: portfolio-html
   namespace: portfolio
 data:
-  main.html: |
-    {{ include "stable-diffusion-gitops/apps/portfolio/main.html" }}
+  index.html: |
+    <html><body><h1>Welcome to My Portfolio</h1></body></html>
   resume.html: |
-    {{ include "stable-diffusion-gitops/apps/portfolio/resume.html" }}
+    <html><body><h1>Resume</h1></body></html>
