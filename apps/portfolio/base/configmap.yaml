@@ -100,6 +100,26 @@ data:
                             </div>
                         </div>
                     </div>
+                    <div class="col-md-4">
+                        <div class="card">
+                            <img src="https://source.unsplash.com/400x300/?cloud,computing" class="card-img-top" alt="Cloud Project Image">
+                            <div class="card-body">
+                                <h5 class="card-title">Cloud Computing Project</h5>
+                                <p class="card-text">Implemented a scalable cloud solution using AWS services.</p>
+                                <a href="#" class="btn btn-primary">View Project</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card">
+                            <img src="https://source.unsplash.com/400x300/?data,science" class="card-img-top" alt="Data Science Project Image">
+                            <div class="card-body">
+                                <h5 class="card-title">Data Science Analysis</h5>
+                                <p class="card-text">Conducted data analysis using Python and Jupyter Notebooks.</p>
+                                <a href="#" class="btn btn-primary">View Project</a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </section>
             <section id="contact" class="section text-center">
