@@ -112,7 +112,7 @@ data:
                     </div>
                     <div class="col-md-4">
                         <div class="card">
-                            <img src="https://source.unsplash.com/400x300/?data,science" class="card-img-top" alt="Data Science Project Image">
+                            <img src="https://images.unsplash.com/photo-1591696205602-2f950c417cb9?fm=jpg&amp;q=60&amp;w=3000&amp;ixlib=rb-4.0.3&amp;ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" class="card-img-top" alt="Data Science Project Image">
                             <div class="card-body">
                                 <h5 class="card-title">Data Science Analysis</h5>
                                 <p class="card-text">Conducted data analysis using Python and Jupyter Notebooks.</p>
