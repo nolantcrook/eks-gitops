@@ -17,6 +17,11 @@ spec:
     spec:
       nodeSelector:
         storage: high # Ensures pod is scheduled on nodes with this label
+      tolerations:
+      - key: "nvidia.com/gpu"
+        operator: "Equal"
+        value: "true"
+        effect: "NoSchedule"
       containers:
       - name: invokeai
         image: mauwii/invokeai:latest
@@ -26,16 +31,18 @@ spec:
         args: ["--web", "--host", "0.0.0.0", "--port", "9090","--cors", "https://invokeai.hello-world-domain.com"]
         env:
         - name: USE_CPU
-          value: "true" # Example environment variable to force CPU usage
+          value: "false" # Example environment variable to force CPU usage
         resources:
           requests:
             memory: "4Gi"
             cpu: "1"
             ephemeral-storage: "2Gi" # Requesting 2 GiB of ephemeral storage
+            nvidia.com/gpu: "1" # Requesting 1 GPU
           limits:
             memory: "8Gi"
             cpu: "2"
             ephemeral-storage: "4Gi" # Limiting to 4 GiB of ephemeral storage
+            nvidia.com/gpu: "1" # Limiting to 1 GPU
 
 
 
