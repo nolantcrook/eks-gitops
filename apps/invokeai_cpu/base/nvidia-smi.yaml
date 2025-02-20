@@ -4,13 +4,6 @@ metadata:
   name: nvidia-smi
 spec:
   restartPolicy: OnFailure
-  nodeSelector:
-    node.kubernetes.io/gpu: "true"
-  tolerations:
-  - key: "nvidia.com/gpu"
-    operator: "Equal"
-    value: "true"
-    effect: "NoSchedule"
   containers:
   - name: nvidia-smi
     image: nvidia/cuda:12.5-runtime-ubuntu20.04
