@@ -5,7 +5,7 @@ namespace: invokeai
 
 resources:
 - namespace.yaml
-- deployment.yaml
-- service.yaml
-- ingress.yaml
+# - deployment.yaml
+# - service.yaml
+# - ingress.yaml
 - nvidia-smi.yaml
