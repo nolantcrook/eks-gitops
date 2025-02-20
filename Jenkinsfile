@@ -43,98 +43,17 @@ pipeline {
             }
         }
 
-        stage('Install ArgoCD') {
+        stage('Install NVIDIA Device Plugin') {
             steps {
                 script {
                     sh """
-                        echo "Installing ArgoCD core components..."
-                        kubectl apply -k argocd/overlays/dev
-                        
-                        # Wait for ArgoCD server to be ready
-                        kubectl wait --for=condition=available deployment/argocd-server -n argocd --timeout=300s
-                    """
-                    
-                    // Get GitHub credentials
-                    def (username, token) = sh(
-                        script: '''
-                            SECRET_JSON=$(aws secretsmanager get-secret-value \
-                                --secret-id github/stable-diff-gitops-secret \
-                                --region ${AWS_REGION} \
-                                --query SecretString \
-                                --output text)
-                            
-                            if [ $? -ne 0 ]; then
-                                echo "Failed to retrieve secret from AWS" >&2
-                                exit 1
-                            fi
-                            
-                            echo "$SECRET_JSON" | python3 -c '
-import sys, json
-try:
-    secret = json.load(sys.stdin)
-    print(secret["username"])
-    print(secret["token"])
-except Exception as e:
-    print(f"Error parsing secret: {e}", file=sys.stderr)
-    sys.exit(1)
-'
-                        ''',
-                        returnStdout: true
-                    ).trim().split('\n')
-                    
-                    if (!username?.trim() || !token?.trim()) {
-                        error "Failed to get valid credentials from AWS Secrets Manager"
-                    }
-                    
-                    // Create repository secret
-                    sh """
-                        kubectl delete secret github-repo -n argocd --ignore-not-found
-                        sleep 2
-                        
-                        kubectl create secret generic github-repo \
-                            -n argocd \
-                            --from-literal=type=git \
-                            --from-literal=url=https://github.com/nolantcrook/stable-diffusion-gitops.git \
-                            --from-literal=username='${username}' \
-                            --from-literal=password='${token}'
-                        
-                        kubectl label secret github-repo -n argocd \
-                            argocd.argoproj.io/secret-type=repository --overwrite
-                    """
-                }
-            }
-        }
-        
-        stage('Deploy Ingress') {
-            steps {
-                script {
-                    sh """
-                        echo "Deploying Ingress components..."
-                        pwd
-                        ls
-                        kubectl apply -k apps/ingress/overlays/dev
-                        
-                        # Wait for Ingress controller to be ready
-                        kubectl wait --for=condition=available deployment/ingress-nginx-controller -n ingress-nginx --timeout=300s
+                        echo "Deploying NVIDIA device plugin..."
+                        kubectl apply -f https://raw.githubusercontent.com/NVIDIA/k8s-device-plugin/v0.17.0/deployments/static/nvidia-device-plugin.yml
                     """
                 }
             }
         }
 
-        stage('Deploy Autoscaler') {
-            steps {
-                script {
-                    sh """
-                        echo "Deploying Cluster Autoscaler..."
-                        kubectl apply -k apps/eks-autoscaler/base
-                        
-                        # Wait for Autoscaler to be ready
-                        kubectl wait --for=condition=available deployment/cluster-autoscaler -n kube-system --timeout=300s
-                    """
-                }
-            }
-        }
-        
         stage('Deploy Applications') {
             steps {
                 script {
@@ -178,4 +97,4 @@ for app_name, namespace in apps.items():
             echo "Pipeline failed!"
         }
     }
-} 
+}
