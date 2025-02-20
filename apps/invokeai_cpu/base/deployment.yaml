@@ -37,10 +37,8 @@ spec:
             memory: "4Gi"
             cpu: "1"
             ephemeral-storage: "2Gi" # Requesting 2 GiB of ephemeral storage
-            nvidia.com/gpu: "1" # Requesting 1 GPU
           limits:
             memory: "8Gi"
             cpu: "2"
             ephemeral-storage: "4Gi" # Limiting to 4 GiB of ephemeral storage
-            nvidia.com/gpu: "1" # Limiting to 1 GPU
 
