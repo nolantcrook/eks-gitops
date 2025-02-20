@@ -16,7 +16,7 @@ spec:
         app: invokeai
     spec:
       nodeSelector:
-        storage: high # Ensures pod is scheduled on nodes with this label
+        compute: gpu # Ensures pod is scheduled on nodes with this label
       tolerations:
       - key: "nvidia.com/gpu"
         operator: "Equal"
