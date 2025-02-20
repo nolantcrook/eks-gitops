@@ -2,6 +2,7 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: nvidia-smi
+  namespace: invokeai
 spec:
   restartPolicy: OnFailure
   containers:
