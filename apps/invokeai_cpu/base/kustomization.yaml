@@ -8,7 +8,7 @@ resources:
 - deployment.yaml
 - service.yaml
 - ingress.yaml
-- nvidia-smi.yaml
-- mps-daemonset.yaml
 - storageclass.yaml
 - pvc.yaml
+- persistent-volume.yaml
+- service-account.yaml
