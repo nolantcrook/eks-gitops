@@ -32,6 +32,10 @@ spec:
         env:
         - name: USE_CPU
           value: "false" # Example environment variable to force CPU usage
+        - name: CUDA_MPS_PIPE_DIRECTORY
+          value: "/tmp/nvidia-mps" # Same as MPS control daemon
+        - name: CUDA_MPS_LOG_DIRECTORY
+          value: "/tmp/nvidia-log" # Same as MPS control daemon
         resources:
           requests:
             memory: "4Gi"

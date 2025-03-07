@@ -23,6 +23,13 @@ spec:
       - name: nvidia-mps
         image: nvidia/cuda:12.5.0-runtime-ubuntu20.04
         command: ["/bin/bash", "-c", "nvidia-cuda-mps-control -d && sleep infinity"]
+        env:
+        - name: CUDA_VISIBLE_DEVICES
+          value: "0" # Select GPU 0
+        - name: CUDA_MPS_PIPE_DIRECTORY
+          value: "/tmp/nvidia-mps"
+        - name: CUDA_MPS_LOG_DIRECTORY
+          value: "/tmp/nvidia-log"
         resources:
           limits:
             nvidia.com/gpu: 0 # No GPU resources needed for the MPS control daemon 
