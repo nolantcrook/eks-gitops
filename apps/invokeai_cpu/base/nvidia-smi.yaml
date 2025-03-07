@@ -16,10 +16,10 @@ spec:
     args:
     - "nvidia-smi"
     env:
-      - name: CUDA_MPS_PIPE_DIRECTORY
-        value: "/tmp/nvidia-mps" # Same as MPS control daemon
-      - name: CUDA_MPS_LOG_DIRECTORY
-        value: "/tmp/nvidia-log" # Same as MPS control daemon
+    - name: CUDA_MPS_PIPE_DIRECTORY
+      value: "/tmp/nvidia-mps" # Same as MPS control daemon
+    - name: CUDA_MPS_LOG_DIRECTORY
+      value: "/tmp/nvidia-log" # Same as MPS control daemon
     resources:
       limits:
         nvidia.com/gpu: 1
