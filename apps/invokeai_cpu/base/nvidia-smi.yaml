@@ -4,6 +4,7 @@ metadata:
   name: nvidia-smi
   namespace: invokeai
 spec:
+  hostIPC: true
   restartPolicy: OnFailure
   tolerations:
   - key: "nvidia.com/gpu"
