@@ -23,4 +23,4 @@ spec:
       value: "/tmp/nvidia-log" # Same as MPS control daemon
     resources:
       limits:
-        nvidia.com/gpu: 0
+        nvidia.com/gpu: 1
