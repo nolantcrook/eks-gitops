@@ -25,10 +25,10 @@ spec:
       initContainers:
       - name: config-init
         image: busybox
-        command: ['sh', '-c', 'cp /config/invokeai.init /data/invokeai.init && chmod 644 /data/invokeai.init']
+        command: ['sh', '-c', 'mkdir -p /data/config && cp /config-source/invokeai.init /data/config/invokeai.init && chmod -R 777 /data']
         volumeMounts:
         - name: init-config
-          mountPath: /config
+          mountPath: /config-source
         - name: config-dir
           mountPath: /data
       containers:
@@ -40,26 +40,28 @@ spec:
         args: ["--web", "--host", "0.0.0.0", "--port", "9090","--cors", "https://invokeai.hello-world-domain.com"]
         env:
         - name: USE_CPU
-          value: "false" # Example environment variable to force CPU usage
+          value: "false"
         - name: CUDA_MPS_PIPE_DIRECTORY
-          value: "/tmp/nvidia-mps" # Same as MPS control daemon
+          value: "/tmp/nvidia-mps"
         - name: CUDA_MPS_LOG_DIRECTORY
-          value: "/tmp/nvidia-log" # Same as MPS control daemon
+          value: "/tmp/nvidia-log"
+        - name: INVOKEAI_ROOT
+          value: "/data/config"
         - name: INVOKEAI_OUTPUTS_DIR
-          value: "/mnt/efs"  # Set this to the desired directory on your EFS
+          value: "/mnt/efs"
         resources:
           requests:
             memory: "4Gi"
             cpu: "1"
-            ephemeral-storage: "2Gi" # Requesting 2 GiB of ephemeral storage
-            nvidia.com/gpu: "1" # Requesting 1 GPU
+            ephemeral-storage: "2Gi"
+            nvidia.com/gpu: "1"
           limits:
             memory: "8Gi"
             cpu: "2"
-            ephemeral-storage: "4Gi" # Limiting to 4 GiB of ephemeral storage
-            nvidia.com/gpu: "1" # Limiting to 1 GPU
+            ephemeral-storage: "4Gi"
+            nvidia.com/gpu: "1"
         volumeMounts:
-        - mountPath: "/mnt/efs"  # Ensure this is the correct mount path for your EFS
+        - mountPath: "/mnt/efs"
           name: efs-volume
         - mountPath: "/data"
           name: config-dir
