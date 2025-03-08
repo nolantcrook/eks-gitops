@@ -12,3 +12,4 @@ resources:
 - pvc.yaml
 - persistent-volume.yaml
 - service-account.yaml
+- init-config.yaml
