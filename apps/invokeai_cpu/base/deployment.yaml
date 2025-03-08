@@ -22,6 +22,15 @@ spec:
         operator: "Equal"
         value: "true"
         effect: "NoSchedule"
+      initContainers:
+      - name: config-init
+        image: busybox
+        command: ['sh', '-c', 'cp /config/invokeai.init /data/invokeai.init && chmod 644 /data/invokeai.init']
+        volumeMounts:
+        - name: init-config
+          mountPath: /config
+        - name: config-dir
+          mountPath: /data
       containers:
       - name: invokeai
         image: mauwii/invokeai:latest
@@ -52,9 +61,8 @@ spec:
         volumeMounts:
         - mountPath: "/mnt/efs"  # Ensure this is the correct mount path for your EFS
           name: efs-volume
-        - mountPath: "/data/invokeai.init"
-          name: init-config
-          subPath: invokeai.init
+        - mountPath: "/data"
+          name: config-dir
       volumes:
       - name: efs-volume
         persistentVolumeClaim:
@@ -62,4 +70,6 @@ spec:
       - name: init-config
         configMap:
           name: invokeai-init-config
+      - name: config-dir
+        emptyDir: {}
 
