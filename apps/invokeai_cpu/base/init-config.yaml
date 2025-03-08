@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: invokeai-init-config
+  namespace: invokeai
+data:
+  invokeai.init: |
+    # InvokeAI initialization file
+    # This is the InvokeAI initialization file, which contains command-line default values.
+    # Feel free to edit. If anything goes wrong, you can re-initialize this file by deleting
+    # or renaming it and then running invokeai-configure again.
+    # Place  frequently-used startup commands here, one or more per line.
+    # Examples:
+    # --outdir=D:\data\images
+    # --no-nsfw_checker
+    # --web --host=0.0.0.0
+    # --steps=20
+    # -Ak_euler_a -C10.0
+
+    --outdir=/data/outputs/efs
+    --embedding_path=embeddings
+    --precision=auto
+    --max_loaded_models=2
+    --no-nsfw_checker
+    --xformers
+    --ckpt_convert 
