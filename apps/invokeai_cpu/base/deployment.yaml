@@ -36,6 +36,8 @@ spec:
           value: "/tmp/nvidia-mps" # Same as MPS control daemon
         - name: CUDA_MPS_LOG_DIRECTORY
           value: "/tmp/nvidia-log" # Same as MPS control daemon
+        - name: INVOKEAI_OUTPUTS_DIR
+          value: "/mnt/efs/outputs"  # Set this to the desired directory on your EFS
         resources:
           requests:
             memory: "4Gi"
@@ -48,7 +50,7 @@ spec:
             ephemeral-storage: "4Gi" # Limiting to 4 GiB of ephemeral storage
             nvidia.com/gpu: "1" # Limiting to 1 GPU
         volumeMounts:
-        - mountPath: "/data/outputs"  # Ensure this is the correct mount path for your EFS
+        - mountPath: "/mnt/efs"  # Ensure this is the correct mount path for your EFS
           name: efs-volume
       volumes:
       - name: efs-volume
