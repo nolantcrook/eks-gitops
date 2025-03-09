@@ -17,10 +17,9 @@ data:
     # --steps=20
     # -Ak_euler_a -C10.0
 
-    --outdir=/data/outputs/efs
+    --outdir=/mnt/efs/invokeai/outputs
     --embedding_path=embeddings
     --precision=auto
     --max_loaded_models=2
-    --no-nsfw_checker
     --xformers
     --ckpt_convert 
