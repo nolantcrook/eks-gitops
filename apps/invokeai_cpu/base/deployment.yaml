@@ -25,12 +25,21 @@ spec:
       initContainers:
       - name: config-init
         image: busybox
-        command: ['sh', '-c', 'mkdir -p /data/config && cp /config-source/invokeai.init /data/config/invokeai.init && chmod -R 777 /data']
+        command: ['sh', '-c', '
+          mkdir -p /data/config && 
+          mkdir -p /home/appuser/efs/invokeai/outputs && 
+          cp /config-source/invokeai.init /data/config/invokeai.init && 
+          chown -R 1000:1000 /home/appuser && 
+          chmod -R 755 /home/appuser && 
+          chmod -R 777 /data
+        ']
         volumeMounts:
         - name: init-config
           mountPath: /config-source
         - name: config-dir
           mountPath: /data
+        - name: efs-volume
+          mountPath: /home/appuser/efs/invokeai/outputs
       containers:
       - name: invokeai
         image: mauwii/invokeai:latest
@@ -41,10 +50,6 @@ spec:
         env:
         - name: USE_CPU
           value: "false"
-        - name: CUDA_MPS_PIPE_DIRECTORY
-          value: "/tmp/nvidia-mps"
-        - name: CUDA_MPS_LOG_DIRECTORY
-          value: "/tmp/nvidia-log"
         - name: INVOKEAI_ROOT
           value: "/data/config"
         - name: INVOKEAI_OUTPUTS_DIR
