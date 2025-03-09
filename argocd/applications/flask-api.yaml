@@ -9,10 +9,6 @@ spec:
     repoURL: https://github.com/nolantcrook/stable-diffusion-gitops.git
     targetRevision: HEAD
     path: apps/invokeai-api/overlays/dev
-    plugin:
-      env:
-        - name: AWS_ACCOUNT_ID
-          value: "891377073036"
   destination:
     server: https://kubernetes.default.svc
     namespace: invokeai-api

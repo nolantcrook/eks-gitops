@@ -8,7 +8,7 @@ configMapGenerator:
 - name: aws-config
   namespace: invokeai-api
   literals:
-  - AWS_ACCOUNT_ID=$(AWS_ACCOUNT_ID)
+  - AWS_ACCOUNT_ID=891377073036
 
 vars:
 - name: AWS_ACCOUNT_ID
