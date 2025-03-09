@@ -4,5 +4,20 @@ kind: Kustomization
 resources:
 - ../../base
 
+configMapGenerator:
+- name: aws-config
+  namespace: invokeai-api
+  literals:
+  - AWS_ACCOUNT_ID=$(AWS_ACCOUNT_ID)
+
+vars:
+- name: AWS_ACCOUNT_ID
+  objref:
+    kind: ConfigMap
+    name: aws-config
+    apiVersion: v1
+  fieldref:
+    fieldpath: data.AWS_ACCOUNT_ID
+
 patches:
 - path: patches.yaml 
