@@ -25,7 +25,7 @@ spec:
       initContainers:
       - name: config-init
         image: busybox
-        command: ['sh', '-c', 'mkdir -p /data/config && cp /config-source/invokeai.init /data/config/invokeai.init && chmod -R 777 /data']
+        command: ['sh', '-c', 'mkdir -p /data/config && mkdir -p /data/efs/invokeai/outputs && cp /config-source/invokeai.init /data/config/invokeai.init && chmod -R 777 /data']
         volumeMounts:
         - name: init-config
           mountPath: /config-source
