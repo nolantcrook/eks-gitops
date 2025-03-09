@@ -1,3 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: portfolio-html
+  namespace: portfolio
+data:
+  calendar.html: |
+    # Content sourced from stable-diffusion-gitops/apps/portfolio/calendar.html
+  equipment.html: |
+    # Content sourced from stable-diffusion-gitops/apps/portfolio/equipment.html
+  main.html: |
+    # Content sourced from stable-diffusion-gitops/apps/portfolio/main.html
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -19,7 +32,7 @@ spec:
         ports:
         - containerPort: 80
         volumeMounts:
-        - name: html
+        - name: html-files
           mountPath: /usr/share/nginx/html
       initContainers:
       - name: init-html
@@ -31,8 +44,9 @@ spec:
         - name: html
           mountPath: /html
       volumes:
-      - name: html
-        emptyDir: {}
+      - name: html-files
+        configMap:
+          name: portfolio-html
       - name: config-volume
         configMap:
           name: portfolio-html 
