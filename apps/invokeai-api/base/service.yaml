@@ -9,4 +9,4 @@ spec:
     targetPort: 5000
     protocol: TCP
   selector:
-    app: flask-api 
+    app: invokeai-api

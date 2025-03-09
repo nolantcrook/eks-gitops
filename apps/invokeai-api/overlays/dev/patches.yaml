@@ -1,13 +1,14 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: flask-api
-  namespace: flask-api
+  name: invokeai-api
+  namespace: invokeai-api
 spec:
   template:
     spec:
       containers:
-      - name: flask-api
+      - name: invokeai-api
+        image: ${AWS_ACCOUNT_ID}.dkr.ecr.us-west-2.amazonaws.com/flask-api-invokeai:latest
         resources:
           requests:
             cpu: 100m
