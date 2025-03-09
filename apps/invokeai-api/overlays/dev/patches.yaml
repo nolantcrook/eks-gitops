@@ -8,7 +8,7 @@ spec:
     spec:
       containers:
       - name: invokeai-api
-        image: ${AWS_ACCOUNT_ID}.dkr.ecr.us-west-2.amazonaws.com/flask-api-invokeai:latest
+        image: 891377073036.dkr.ecr.us-west-2.amazonaws.com/flask-api-invokeai:latest
         resources:
           requests:
             cpu: 100m
