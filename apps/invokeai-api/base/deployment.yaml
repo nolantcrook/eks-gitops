@@ -15,9 +15,12 @@ spec:
     spec:
       containers:
       - name: invokeai-api
-        image: ${AWS_ACCOUNT_ID}.dkr.ecr.us-west-2.amazonaws.com/flask-api-invokeai:latest
+        image: $AWS_ACCOUNT_ID.dkr.ecr.us-west-2.amazonaws.com/flask-api-invokeai:latest
         ports:
         - containerPort: 5000
+        env:
+        - name: AWS_ACCOUNT_ID
+          value: $AWS_ACCOUNT_ID
         resources:
           requests:
             cpu: 100m
