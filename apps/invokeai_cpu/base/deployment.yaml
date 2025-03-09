@@ -48,7 +48,7 @@ spec:
         - name: INVOKEAI_ROOT
           value: "/data/config"
         - name: INVOKEAI_OUTPUTS_DIR
-          value: "/mnt/efs/invokeai/outputs"
+          value: "/data/efs/invokeai/outputs"
         resources:
           requests:
             memory: "4Gi"
@@ -61,7 +61,7 @@ spec:
             ephemeral-storage: "16Gi"
             nvidia.com/gpu: "1"
         volumeMounts:
-        - mountPath: "/mnt/efs/invokeai/outputs"
+        - mountPath: "/data/efs/invokeai/outputs"
           name: efs-volume
         - mountPath: "/data"
           name: config-dir
