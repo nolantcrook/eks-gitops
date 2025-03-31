@@ -13,4 +13,4 @@ spec:
   storageClassName: efs-sc
   csi:
     driver: efs.csi.aws.com
-    volumeHandle: fs-0e8f84fc4df395bd4  # Make sure this matches your EFS ID
+    volumeHandle: fs-0e198c30a21ae1e9b  # Make sure this matches your EFS ID
