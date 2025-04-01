@@ -1,4 +1,0 @@
-namespace: invokeai-headless
-
-bases:
-  - ../../base

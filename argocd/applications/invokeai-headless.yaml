@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: https://github.com/nolantcrook/stable-diffusion-gitops.git
     targetRevision: HEAD
-    path: apps/invokeai-headless/overlays/dev/kustomization.yaml
+    path: apps/invokeai-headless/base
   destination:
     server: https://kubernetes.default.svc
     namespace: invokeai-headless
