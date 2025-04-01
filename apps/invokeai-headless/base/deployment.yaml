@@ -15,7 +15,6 @@ spec:
         lifecycle: "Ec2Spot"
         node.kubernetes.io/lifecycle: "spot"
         node.kubernetes.io/gpu: "true"
-        arch: "arm64"
     spec:
       serviceAccountName: invokeai-headless-sa
       containers:
@@ -29,10 +28,5 @@ spec:
         operator: "Equal"
         value: "true"
         effect: "NoSchedule"
-      - key: "arch"
-        operator: "Equal"
-        value: "arm64"
-        effect: "NoSchedule"
       nodeSelector:
         node.kubernetes.io/gpu: "true"
-        arch: "arm64"
