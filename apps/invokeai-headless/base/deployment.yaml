@@ -19,11 +19,4 @@ spec:
         image: 891377073036.dkr.ecr.us-west-2.amazonaws.com/invokeai-headless:latest
         ports:
         - containerPort: 5000
-        volumeMounts:
-        - name: app-volume
-          mountPath: /app
         command: ["/bin/bash", "-c", "python /app/app.py"]
-      volumes:
-      - name: app-volume
-        configMap:
-          name: invokeai-headless-config
