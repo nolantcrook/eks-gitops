@@ -13,6 +13,7 @@ spec:
       labels:
         app: invokeai-api
     spec:
+      serviceAccountName: invokeai-api-sa
       containers:
       - name: invokeai-api
         image: $AWS_ACCOUNT_ID.dkr.ecr.us-west-2.amazonaws.com/flask-api-invokeai:latest
