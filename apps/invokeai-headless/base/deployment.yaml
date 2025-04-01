@@ -20,9 +20,6 @@ spec:
       containers:
       - name: invokeai-headless
         image: 891377073036.dkr.ecr.us-west-2.amazonaws.com/invokeai-headless:latest
-        ports:
-        - containerPort: 5000
-        command: ["/bin/bash", "-c", "python /app/app.py"]
       tolerations:
       - key: "nvidia.com/gpu"
         operator: "Equal"
