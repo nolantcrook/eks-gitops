@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: invokeai-headless
+  namespace: invokeai-headless
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: invokeai-headless
+  template:
+    metadata:
+      labels:
+        app: invokeai-headless
+    spec:
+      serviceAccountName: invokeai-headless-sa
+      containers:
+      - name: invokeai-headless
+        image: 891377073036.dkr.ecr.us-west-2.amazonaws.com/invokeai-headless:latest
+        ports:
+        - containerPort: 5000
+        volumeMounts:
+        - name: app-volume
+          mountPath: /app
+        command: ["/bin/bash", "-c", "python /app/app.py"]
+      volumes:
+      - name: app-volume
+        configMap:
+          name: invokeai-headless-config
