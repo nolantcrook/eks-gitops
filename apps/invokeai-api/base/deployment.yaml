@@ -29,8 +29,3 @@ spec:
           limits:
             cpu: 200m
             memory: 256Mi
-      tolerations:
-      - key: "arch"
-        operator: "Equal"
-        value: "arm64"
-        effect: "NoSchedule" 
