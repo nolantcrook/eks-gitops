@@ -12,6 +12,10 @@ spec:
     metadata:
       labels:
         app: invokeai-headless
+        lifecycle: "Ec2Spot"
+        node.kubernetes.io/lifecycle: "spot"
+        node.kubernetes.io/gpu: "true"
+        arch: "arm64"
     spec:
       serviceAccountName: invokeai-headless-sa
       containers:
@@ -20,3 +24,15 @@ spec:
         ports:
         - containerPort: 5000
         command: ["/bin/bash", "-c", "python /app/app.py"]
+      tolerations:
+      - key: "nvidia.com/gpu"
+        operator: "Equal"
+        value: "true"
+        effect: "NoSchedule"
+      - key: "arch"
+        operator: "Equal"
+        value: "arm64"
+        effect: "NoSchedule"
+      nodeSelector:
+        node.kubernetes.io/gpu: "true"
+        arch: "arm64"
