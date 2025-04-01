@@ -20,6 +20,20 @@ spec:
       containers:
       - name: invokeai-headless
         image: 891377073036.dkr.ecr.us-west-2.amazonaws.com/invokeai-headless:latest
+        env:
+        - name: USE_CPU
+          value: "false"
+        resources:
+          requests:
+            memory: "4Gi"
+            cpu: "1"
+            ephemeral-storage: "16Gi"
+            nvidia.com/gpu: "1"
+          limits:
+            memory: "8Gi"
+            cpu: "2"
+            ephemeral-storage: "16Gi"
+            nvidia.com/gpu: "1"
       tolerations:
       - key: "nvidia.com/gpu"
         operator: "Equal"
