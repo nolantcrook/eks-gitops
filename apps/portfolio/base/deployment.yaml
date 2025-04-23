@@ -1,10 +1,10 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: portfolio-deployment
+  name: portfolio
   namespace: portfolio
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: portfolio
@@ -14,37 +14,26 @@ spec:
         app: portfolio
     spec:
       containers:
-      - name: nginx
-        image: nginx:alpine
+      - name: portfolio
+        image: 891377073036.dkr.ecr.us-west-2.amazonaws.com/website_image:latest
         ports:
-        - containerPort: 80
-        volumeMounts:
-        - name: html
-          mountPath: /usr/share/nginx/html
-      initContainers:
-      - name: init-html
-        image: busybox
-        command: ['sh', '-c', 'cp /config/* /html/']
-        volumeMounts:
-        - name: config-volume
-          mountPath: /config
-        - name: html
-          mountPath: /html
-      volumes:
-      - name: html
-        emptyDir: {}
-      - name: config-volume
-        configMap:
-          name: portfolio-html 
-
-
-
-initContainers:
-  - name: init-html
-    image: busybox
-    command: ['sh', '-c', 'cp /config/* /html/ && chown -R nginx:nginx /html']
-    volumeMounts:
-      - name: config-volume
-        mountPath: /config
-      - name: html
-        mountPath: /html
+        - containerPort: 3000
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "200m"
+            memory: "256Mi"
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 3000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 3000
+          initialDelaySeconds: 5
+          periodSeconds: 5 
