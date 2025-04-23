@@ -19,7 +19,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: argocd.hello-world-domain.com
+    - host: argocd.nolancrook.com
       http:
         paths:
           - path: /

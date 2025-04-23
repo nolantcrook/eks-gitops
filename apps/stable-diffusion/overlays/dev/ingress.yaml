@@ -8,7 +8,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: api.hello-world-domain.com
+    - host: api.nolancrook.com
       http:
         paths:
           - path: /
