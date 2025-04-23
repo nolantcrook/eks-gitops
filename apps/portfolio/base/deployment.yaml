@@ -17,7 +17,7 @@ spec:
       - name: portfolio
         image: 891377073036.dkr.ecr.us-west-2.amazonaws.com/website_image:latest
         ports:
-        - containerPort: 80
+        - containerPort: 3000
         resources:
           requests:
             cpu: "100m"
@@ -28,12 +28,12 @@ spec:
         livenessProbe:
           httpGet:
             path: /
-            port: 80
+            port: 3000
           initialDelaySeconds: 30
           periodSeconds: 10
         readinessProbe:
           httpGet:
             path: /
-            port: 80
+            port: 3000
           initialDelaySeconds: 5
           periodSeconds: 5 
