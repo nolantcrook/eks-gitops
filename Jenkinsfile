@@ -245,8 +245,7 @@ for app_name, namespace in apps.items():
     
     post {
         always {
-            echo 'Cleaning workspace'
-            cleanWs notFailBuild: true
+            echo 'Pipeline completed'
         }
         success {
             echo 'Pipeline completed successfully!'
