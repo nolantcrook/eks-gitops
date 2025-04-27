@@ -1,0 +1,29 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: deepseek
+
+resources:
+- namespace.yaml
+- deployment.yaml
+- service.yaml
+- storageclass.yaml
+- pvc.yaml
+- service-account.yaml
+- parameter-store.yaml
+- efs-parameter.yaml
+- secret-store.yaml
+- hf-parameter.yaml
+
+# Add replacements for the EFS ID
+replacements:
+- source:
+    kind: Secret
+    name: efs-config
+    fieldPath: data.efs-id
+  targets:
+  - select:
+      kind: StorageClass
+      name: efs-sc
+    fieldPaths:
+    - parameters.fileSystemId

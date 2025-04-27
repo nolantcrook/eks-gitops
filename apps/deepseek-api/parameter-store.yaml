@@ -1,0 +1,14 @@
+apiVersion: external-secrets.io/v1beta1
+kind: SecretStore
+metadata:
+  name: aws-parameter-store
+  namespace: deepseek
+spec:
+  provider:
+    aws:
+      service: ParameterStore
+      region: us-west-2
+      auth:
+        jwt:
+          serviceAccountRef:
+            name: deepseek-api-sa 

@@ -1,0 +1,17 @@
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: huggingface-secret
+  namespace: deepseek-api
+spec:
+  refreshInterval: "15m"
+  secretStoreRef:
+    name: aws-secrets-store
+    kind: SecretStore
+  target:
+    name: hf-token
+  data:
+    - secretKey: token
+      remoteRef:
+        key: huggingface/token
+        property: token 
