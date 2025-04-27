@@ -6,7 +6,6 @@ pipeline {
         AWS_CONFIG_FILE = '/root/.aws/config'
         AWS_SHARED_CREDENTIALS_FILE = '/root/.aws/credentials'
         APPLICATIONS = '{"stable-diffusion": "stable-diffusion"}'
-        KUBECONFIG = credentials('kubeconfig')
     }
     
     parameters {
@@ -31,72 +30,6 @@ pipeline {
         stage('Checkout') {
             steps {
                 checkout scm
-            }
-        }
-        
-        stage('Install External Secrets Operator') {
-            steps {
-                withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
-                    sh '''
-                        # Add the External Secrets Operator Helm repository
-                        helm repo add external-secrets https://charts.external-secrets.io
-                        
-                        # Update Helm repositories
-                        helm repo update
-                        
-                        # Check if already installed
-                        if helm list -n external-secrets | grep -q "external-secrets"; then
-                            echo "External Secrets Operator already installed, upgrading..."
-                            helm upgrade external-secrets \
-                                external-secrets/external-secrets \
-                                --namespace external-secrets \
-                                --set installCRDs=true
-                        else
-                            echo "Installing External Secrets Operator..."
-                            # Install the External Secrets Operator
-                            helm install external-secrets \
-                                external-secrets/external-secrets \
-                                --namespace external-secrets \
-                                --create-namespace \
-                                --set installCRDs=true
-                        fi
-                        
-                        # Wait for the operator to be ready
-                        kubectl -n external-secrets wait --for=condition=ready pod -l app.kubernetes.io/name=external-secrets --timeout=120s || true
-                    '''
-                }
-            }
-        }
-        
-        stage('Deploy DeepSeek API') {
-            steps {
-                withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
-                    sh '''
-                        # Apply kustomization
-                        kubectl apply -k stable-diffusion-gitops/apps/deepseek/base
-                        
-                        # Wait for the deployment to be ready
-                        kubectl -n deepseek wait --for=condition=available deployment/deepseek-deployment --timeout=300s || echo "Deployment not ready, but continuing"
-                    '''
-                }
-            }
-        }
-        
-        stage('Verify Deployment') {
-            steps {
-                withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
-                    sh '''
-                        # Check if External Secrets are working
-                        kubectl -n deepseek get externalsecrets || true
-                        kubectl -n deepseek get secrets || true
-                        
-                        # Check if service is accessible
-                        kubectl -n deepseek get svc deepseek || true
-                        
-                        # Check if pods are running
-                        kubectl -n deepseek get pods || true
-                    '''
-                }
             }
         }
         
@@ -245,13 +178,13 @@ for app_name, namespace in apps.items():
     
     post {
         always {
-            echo 'Pipeline completed'
+            cleanWs()
         }
         success {
-            echo 'Pipeline completed successfully!'
+            echo "Pipeline completed successfully!"
         }
         failure {
-            echo 'Pipeline failed!'
+            echo "Pipeline failed!"
         }
     }
 } 
