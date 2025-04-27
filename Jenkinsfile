@@ -49,6 +49,33 @@ pipeline {
                     sh """
                         echo "Deploying NVIDIA device plugin..."
                         kubectl apply -f https://raw.githubusercontent.com/NVIDIA/k8s-device-plugin/v0.17.0/deployments/static/nvidia-device-plugin.yml
+
+
+                        # Add the External Secrets Operator Helm repository
+                        helm repo add external-secrets https://charts.external-secrets.io
+                        
+                        # Update Helm repositories
+                        helm repo update
+                        
+                        # Check if already installed
+                        if helm list -n external-secrets | grep -q "external-secrets"; then
+                            echo "External Secrets Operator already installed, upgrading..."
+                            helm upgrade external-secrets \
+                                external-secrets/external-secrets \
+                                --namespace external-secrets \
+                                --set installCRDs=true
+                        else
+                            echo "Installing External Secrets Operator..."
+                            # Install the External Secrets Operator
+                            helm install external-secrets \
+                                external-secrets/external-secrets \
+                                --namespace external-secrets \
+                                --create-namespace \
+                                --set installCRDs=true
+                        fi
+                        
+                        # Wait for the operator to be ready
+                        kubectl -n external-secrets wait --for=condition=ready pod -l app.kubernetes.io/name=external-secrets --timeout=120s
                     """
                 }
             }
