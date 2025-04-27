@@ -48,10 +48,8 @@ spec:
             ephemeral-storage: "16Gi"
             nvidia.com/gpu: "1"
         volumeMounts:
-        - mountPath: "/home/appuser/efs/deepseek/outputs"
+        - mountPath: "/root/.cache/huggingface"
           name: efs-volume
-        - mountPath: "/data"
-          name: config-dir
       volumes:
       - name: efs-volume
         persistentVolumeClaim:
