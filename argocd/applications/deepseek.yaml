@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: https://github.com/nolantcrook/stable-diffusion-gitops.git
     targetRevision: HEAD
-    path: apps/deepseek/overlays/dev
+    path: apps/deepseek/base
   destination:
     server: https://kubernetes.default.svc
     namespace: deepseek
