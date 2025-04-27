@@ -14,6 +14,7 @@ resources:
 - efs-parameter.yaml
 - secret-store.yaml
 - hf-parameter.yaml
+- placeholder-secrets.yaml
 
 # Add replacements for the EFS ID
 replacements:
