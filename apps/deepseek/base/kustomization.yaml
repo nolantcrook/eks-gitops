@@ -29,5 +29,3 @@ replacements:
       name: efs-sc
     fieldPaths:
     - parameters.fileSystemId
-    options:
-      decode: true
