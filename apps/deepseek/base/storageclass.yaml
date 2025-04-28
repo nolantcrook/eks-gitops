@@ -2,8 +2,10 @@ apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
   name: efs-sc
+  labels:
+    argocd.argoproj.io/instance: deepseek
 provisioner: efs.csi.aws.com
 parameters:
   provisioningMode: efs-ap
-  fileSystemId: ${efs-id}  # Will be replaced via kustomize
+  fileSystemId: fs-02f28eb4ddcaa4817
   directoryPerms: "700" 
