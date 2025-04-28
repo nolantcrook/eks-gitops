@@ -21,6 +21,7 @@ replacements:
 - source:
     kind: Secret
     name: efs-config
+    namespace: deepseek
     fieldPath: data.efs-id
   targets:
   - select:
@@ -28,3 +29,5 @@ replacements:
       name: efs-sc
     fieldPaths:
     - parameters.fileSystemId
+    options:
+      decode: true
