@@ -26,6 +26,8 @@ spec:
       containers:
       - name: deepseek
         image: 891377073036.dkr.ecr.us-west-2.amazonaws.com/deepseek-api:latest
+        command: ["python3", "-m", "vllm.entrypoints.openai.api_server"]
+        args: ["--model", "deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B", "--trust-remote-code"]
         ports:
         - containerPort: 8000
         env:
