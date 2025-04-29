@@ -12,3 +12,4 @@ resources:
 - secret-store.yaml
 - hf-parameter.yaml
 - efs.yaml
+- ingress.yaml
