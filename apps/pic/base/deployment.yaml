@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pic
+  namespace: pic
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: pic
+  template:
+    metadata:
+      labels:
+        app: pic
+    spec:
+      containers:
+      - name: pic
+        image: 891377073036.dkr.ecr.us-west-2.amazonaws.com/pic:latest
+        ports:
+        - containerPort: 3000
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "200m"
+            memory: "256Mi"
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 3000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 3000
+          initialDelaySeconds: 5
+          periodSeconds: 5 
