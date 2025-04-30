@@ -8,7 +8,7 @@ metadata:
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
 spec:
   rules:
-  - host: pic.phthalates-info-center.com
+  - host: phthalates-info-center.com
     http:
       paths:
       - path: /
