@@ -10,16 +10,16 @@ metadata:
     nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
     nginx.ingress.kubernetes.io/websocket-services: "dino-backend"
     nginx.ingress.kubernetes.io/proxy-buffering: "off"
-    nginx.ingress.kubernetes.io/enable-cors: "true"
-    nginx.ingress.kubernetes.io/cors-allow-origin: "*"
-    nginx.ingress.kubernetes.io/configuration-snippet: |
-      proxy_set_header Upgrade $http_upgrade;
-      proxy_set_header Connection "upgrade";
-    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/enable-websocket: "true"
     nginx.ingress.kubernetes.io/affinity: "cookie"
     nginx.ingress.kubernetes.io/session-cookie-name: "route"
+    nginx.ingress.kubernetes.io/session-cookie-path: "/"
     nginx.ingress.kubernetes.io/session-cookie-expires: "172800"
     nginx.ingress.kubernetes.io/session-cookie-max-age: "172800"
+    nginx.ingress.kubernetes.io/server-snippet: |
+      add_header X-Debug-WebSocket-Support "enabled" always;
+      add_header X-Upgrade-Header $http_upgrade always;
+      add_header X-Connection-Header $http_connection always;
 spec:
   rules:
   - host: dino-runner.nolancrook.com
