@@ -14,11 +14,11 @@ spec:
         app: dino-frontend
     spec:
       containers:
-      - name: frontend
-        image: 891377073036.dkr.ecr.us-west-2.amazonaws.com/dino-frontend:latest
+      - name: dino-frontend
+        image: 891377073036.dkr.ecr.us-west-2.amazonaws.com/dino-game-frontend:latest
         env:
         - name: REACT_APP_SOCKET_SERVER_URL
-          value: "http://dino-backend.dino-runner.svc.cluster.local:3001"
+          value: "https://dino-api.nolancrook.com"
         ports:
         - containerPort: 80
         resources:
