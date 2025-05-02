@@ -5,6 +5,11 @@ metadata:
   namespace: dino-runner
   annotations:
     kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    nginx.ingress.kubernetes.io/websocket-services: "dino-backend"
+    nginx.ingress.kubernetes.io/proxy-buffering: "off"
 spec:
   rules:
   - host: dino-runner.nolancrook.com
