@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deepseek-deployment
+  namespace: deepseek
+  labels:
+    app: deepseek
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: deepseek
+  template:
+    metadata:
+      labels:
+        app: deepseek
+    spec:
+      nodeSelector:
+        node.kubernetes.io/gpu: "true"
+      tolerations:
+      - key: "nvidia.com/gpu"
+        operator: "Equal"
+        value: "true"
+        effect: "NoSchedule"
+      serviceAccountName: deepseek-api-sa
+      containers:
+      - name: deepseek
+        image: 891377073036.dkr.ecr.us-west-2.amazonaws.com/deepseek-api:latest
+        ports:
+        - containerPort: 8000
+        env:
+        - name: HF_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: hf-token
+              key: token
+        - name: MODEL_ID
+          value: "deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B"
+        resources:
+          requests:
+            memory: "4Gi"
+            cpu: "1"
+            ephemeral-storage: "16Gi"
+            nvidia.com/gpu: "1"
+          limits:
+            memory: "8Gi"
+            cpu: "2"
+            ephemeral-storage: "16Gi"
+            nvidia.com/gpu: "1"
+        volumeMounts:
+        - mountPath: "/home/appuser/efs/deepseek/outputs"
+          name: efs-volume
+        - mountPath: "/data"
+          name: config-dir
+      volumes:
+      - name: efs-volume
+        persistentVolumeClaim:
+          claimName: efs-pvc
+

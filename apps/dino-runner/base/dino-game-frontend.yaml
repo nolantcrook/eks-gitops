@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dino-frontend
+  namespace: dino-runner
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dino-frontend
+  template:
+    metadata:
+      labels:
+        app: dino-frontend
+    spec:
+      containers:
+      - name: frontend
+        image: 891377073036.dkr.ecr.us-west-2.amazonaws.com/dino-frontend:latest
+        env:
+        - name: REACT_APP_SOCKET_SERVER_URL
+          value: "https://dino-api.nolancrook.com"
+        ports:
+        - containerPort: 80
+        resources:
+          limits:
+            cpu: "200m"
+            memory: "256Mi"
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dino-frontend
+  namespace: dino-runner
+spec:
+  selector:
+    app: dino-frontend
+  ports:
+  - port: 80
+    targetPort: 80
+  type: ClusterIP 

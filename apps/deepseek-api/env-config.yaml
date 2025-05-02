@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: aws-account-info
+  namespace: deepseek
+data:
+  AWS_ACCOUNT_ID: "891377073036"  # This can be set by your CI/CD pipeline

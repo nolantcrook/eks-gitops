@@ -1,0 +1,21 @@
+configMapGenerator:
+- name: aws-account-info
+  behavior: merge
+  envs:
+  - env-config.yaml
+
+replacements:
+- source:
+    kind: ConfigMap
+    name: aws-account-info
+    fieldPath: data.AWS_ACCOUNT_ID
+  targets:
+  - select:
+      kind: ServiceAccount
+      name: deepseek-api-sa
+    fieldPaths:
+    - metadata.annotations.eks\.amazonaws\.com/role-arn
+    options:
+      delimiter: '::'
+      index: 4
+      create: true
