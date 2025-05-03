@@ -31,6 +31,12 @@ kind: Service
 metadata:
   name: dino-backend
   namespace: dino-runner
+  annotations:
+    # Add annotations for WebSocket support
+    service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "http"
+    service.beta.kubernetes.io/aws-load-balancer-proxy-protocol: "*"
+    # Increase timeouts for WebSockets
+    service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: "3600"
 spec:
   selector:
     app: dino-backend
