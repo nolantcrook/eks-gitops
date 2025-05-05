@@ -18,3 +18,13 @@ spec:
             name: portfolio
             port:
               number: 3000 
+  - host: nolancrook.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: portfolio
+            port:
+              number: 3000 
