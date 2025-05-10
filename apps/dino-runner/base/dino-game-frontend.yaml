@@ -18,7 +18,7 @@ spec:
         image: 891377073036.dkr.ecr.us-west-2.amazonaws.com/dino-frontend:latest
         env:
         - name: REACT_APP_SOCKET_SERVER_URL
-          value: "http://dino-game-backend:3001"
+          value: "/socket.io"
         ports:
         - containerPort: 80
         resources:
