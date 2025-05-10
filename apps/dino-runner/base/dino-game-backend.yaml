@@ -1,35 +1,50 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: dino-backend
+  name: dino-game-backend
   namespace: dino-runner
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
-      app: dino-backend
+      app: dino-game-backend
   template:
     metadata:
       labels:
-        app: dino-backend
+        app: dino-game-backend
     spec:
       containers:
-      - name: backend
-        image: 891377073036.dkr.ecr.us-west-2.amazonaws.com/dino-backend:latest
+      - name: dino-game-backend
+        image: ${DOCKER_REGISTRY}/dino-game-backend:latest
         ports:
-        - containerPort: 3001
+        - containerPort: 3000
+        env:
+        - name: REDIS_URL
+          value: "redis://redis:6379"
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 15
+          periodSeconds: 20
         resources:
-          limits:
-            cpu: "500m"
-            memory: "512Mi"
           requests:
-            cpu: "100m"
             memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: dino-backend
+  name: dino-game-backend
   namespace: dino-runner
   annotations:
     # Add annotations for WebSocket support
@@ -39,8 +54,8 @@ metadata:
     service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: "3600"
 spec:
   selector:
-    app: dino-backend
+    app: dino-game-backend
   ports:
-  - port: 3001
-    targetPort: 3001
+  - port: 3000
+    targetPort: 3000
   type: ClusterIP 
