@@ -23,6 +23,8 @@ spec:
           value: "redis://redis:6379"
         - name: PORT
           value: "3001"
+        - name: NODE_ENV
+          value: "production"
         readinessProbe:
           httpGet:
             path: /health
@@ -53,15 +55,22 @@ metadata:
   name: dino-game-backend
   namespace: dino-runner
   annotations:
-    # Add annotations for WebSocket support
+    # WebSocket support
     service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "http"
     service.beta.kubernetes.io/aws-load-balancer-proxy-protocol: "*"
-    # Increase timeouts for WebSockets
     service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: "3600"
+    # Additional WebSocket annotations
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-buffering: "off"
+    nginx.ingress.kubernetes.io/enable-websocket: "true"
 spec:
   selector:
     app: dino-game-backend
   ports:
-  - port: 3001
+  - name: http
+    port: 3001
     targetPort: 3001
+    protocol: TCP
   type: ClusterIP 
