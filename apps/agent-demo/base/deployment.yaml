@@ -48,12 +48,3 @@ spec:
               key: kaggle-key
         - name: AWS_SDK_LOAD_CONFIG
           value: "true"
-        - name: AWS_REGION
-          value: "${AWS_REGION}"
-        volumeMounts:
-        - name: data-volume
-          mountPath: /app/data
-      volumes:
-      - name: data-volume
-        persistentVolumeClaim:
-          claimName: langchain-data-pvc 
