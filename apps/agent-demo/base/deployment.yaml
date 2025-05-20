@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: langchain
+  namespace: langchain
+  labels:
+    app: langchain
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: langchain
+  template:
+    metadata:
+      labels:
+        app: langchain
+    spec:
+      serviceAccountName: langchain-sa
+      containers:
+      - name: langchain
+        image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/langchain:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8000
+          name: http
+        resources:
+          requests:
+            cpu: "500m"
+            memory: "512Mi"
+          limits:
+            cpu: "1000m"
+            memory: "1Gi"
+        env:
+        - name: OPENAI_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: langchain-secrets
+              key: openai-api-key
+        - name: KAGGLE_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: langchain-secrets
+              key: kaggle-username
+        - name: KAGGLE_KEY
+          valueFrom:
+            secretKeyRef:
+              name: langchain-secrets
+              key: kaggle-key
+        - name: AWS_SDK_LOAD_CONFIG
+          value: "true"
+        - name: AWS_REGION
+          value: "${AWS_REGION}"
+        volumeMounts:
+        - name: data-volume
+          mountPath: /app/data
+      volumes:
+      - name: data-volume
+        persistentVolumeClaim:
+          claimName: langchain-data-pvc 

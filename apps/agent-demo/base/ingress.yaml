@@ -1,0 +1,28 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: langchain
+  namespace: langchain
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/use-regex: "true"
+spec:
+  rules:
+  - host: langchain.nolancrook.com
+    http:
+      paths:
+      - path: /oauth2/idpresponse
+        pathType: Prefix
+        backend:
+          service:
+            name: langchain
+            port:
+              number: 80
+      - path: /()(.*)
+        pathType: Prefix
+        backend:
+          service:
+            name: langchain
+            port:
+              number: 80 
