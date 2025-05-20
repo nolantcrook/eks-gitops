@@ -9,13 +9,6 @@ resources:
   - secrets.yaml
   - ingress.yaml
 
-commonLabels:
-  app: langchain
-  environment: production
-
-images:
-  - name: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/langchain
-    newTag: latest
 
 # For production overlays, you can use secretGenerator instead of the plain secrets.yaml
 # secretGenerator:

@@ -18,7 +18,7 @@ spec:
       serviceAccountName: langchain-sa
       containers:
       - name: langchain
-        image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/langchain:latest
+        image: 891377073036.dkr.ecr.us-west-2.amazonaws.com/langchain:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 8000
