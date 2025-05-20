@@ -6,7 +6,7 @@ metadata:
   labels:
     app: langchain
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: langchain
@@ -46,5 +46,3 @@ spec:
             secretKeyRef:
               name: langchain-secrets
               key: kaggle-key
-        - name: AWS_SDK_LOAD_CONFIG
-          value: "true"

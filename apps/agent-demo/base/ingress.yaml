@@ -9,7 +9,7 @@ metadata:
     nginx.ingress.kubernetes.io/use-regex: "true"
 spec:
   rules:
-  - host: langchain.nolancrook.com
+  - host: agent-demo.nolancrook.com
     http:
       paths:
       - path: /oauth2/idpresponse
