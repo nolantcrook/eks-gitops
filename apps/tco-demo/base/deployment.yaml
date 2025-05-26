@@ -73,7 +73,7 @@ spec:
         image: 891377073036.dkr.ecr.us-west-2.amazonaws.com/tco-demo-frontend:latest
         imagePullPolicy: Always
         ports:
-        - containerPort: 3000
+        - containerPort: 8000
           name: frontend
         resources:
           requests:
