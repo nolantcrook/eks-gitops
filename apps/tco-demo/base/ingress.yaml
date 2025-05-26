@@ -20,7 +20,7 @@ spec:
             port:
               number: 80
       # Frontend API proxy routes (handled by Next.js)
-      - path: /api/(proxy|status|download|upload-process)(.*)
+      - path: /(api)/(proxy|status|download|upload-process)(.*)
         pathType: Prefix
         backend:
           service:
