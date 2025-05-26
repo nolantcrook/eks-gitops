@@ -5,8 +5,6 @@ metadata:
   namespace: tco-demo
   annotations:
     kubernetes.io/ingress.class: nginx
-    nginx.ingress.kubernetes.io/rewrite-target: /$2
-    nginx.ingress.kubernetes.io/use-regex: "true"
 spec:
   rules:
   - host: tco-demo.nolancrook.com
@@ -19,8 +17,8 @@ spec:
             name: tco-demo-frontend
             port:
               number: 80
-      # Frontend API proxy routes (handled by Next.js)
-      - path: /(api)/(proxy|status|download|upload-process)(.*)
+      # Frontend API routes (handled by Next.js)
+      - path: /api/
         pathType: Prefix
         backend:
           service:
@@ -28,7 +26,7 @@ spec:
             port:
               number: 80
       # Direct backend API routes
-      - path: /backend-api/()(.*)
+      - path: /backend-api/
         pathType: Prefix
         backend:
           service:
@@ -36,7 +34,7 @@ spec:
             port:
               number: 8001
       # All other routes go to frontend
-      - path: /()(.*)
+      - path: /
         pathType: Prefix
         backend:
           service:
