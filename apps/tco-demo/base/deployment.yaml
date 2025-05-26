@@ -84,4 +84,6 @@ spec:
             memory: "512Mi"
         env:
         - name: NEXT_PUBLIC_API_URL
-          value: "https://tco-demo.nolancrook.com/api" 
+          value: "https://tco-demo.nolancrook.com/api"
+        - name: BACKEND_URL
+          value: "http://tco-demo-backend:8001" 
