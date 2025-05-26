@@ -121,7 +121,7 @@ kubectl logs -n tco-demo deployment/tco-demo -c frontend
 ### Check Secret Status
 
 ```bash
-kubectl describe externalsecret -n tco-demo tco-demo-external-secrets
+kubectl describe externalsecret -n tco-demo tco-demo-secrets
 ```
 
 ### Common Issues
