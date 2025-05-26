@@ -19,13 +19,23 @@ spec:
             name: tco-demo-frontend
             port:
               number: 80
-      - path: /api/()(.*)
+      # Frontend API proxy routes (handled by Next.js)
+      - path: /api/(proxy|status|download|upload-process)(.*)
+        pathType: Prefix
+        backend:
+          service:
+            name: tco-demo-frontend
+            port:
+              number: 80
+      # Direct backend API routes
+      - path: /backend-api/()(.*)
         pathType: Prefix
         backend:
           service:
             name: tco-demo-backend
             port:
               number: 8001
+      # All other routes go to frontend
       - path: /()(.*)
         pathType: Prefix
         backend:
