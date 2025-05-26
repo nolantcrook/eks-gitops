@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: tco-demo
+  labels:
+    app: tco-demo
+    environment: production 

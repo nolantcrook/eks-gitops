@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: tco-demo
+  namespace: tco-demo
+  labels:
+    app: tco-demo
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+    targetPort: 3000
+    protocol: TCP
+    name: frontend
+  - port: 8001
+    targetPort: 8001
+    protocol: TCP
+    name: backend
+  selector:
+    app: tco-demo 

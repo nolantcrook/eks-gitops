@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tco-demo
+  namespace: tco-demo
+  labels:
+    app: tco-demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tco-demo
+  template:
+    metadata:
+      labels:
+        app: tco-demo
+    spec:
+      serviceAccountName: tco-demo-sa
+      containers:
+      - name: backend
+        image: 891377073036.dkr.ecr.us-west-2.amazonaws.com/tco-demo-backend:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8001
+          name: backend
+        resources:
+          requests:
+            cpu: "500m"
+            memory: "512Mi"
+          limits:
+            cpu: "1000m"
+            memory: "1Gi"
+        env:
+        - name: OPENAI_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: tco-demo-secrets
+              key: openai-api-key
+        volumeMounts:
+        - name: uploads
+          mountPath: /app/uploads
+        - name: results
+          mountPath: /app/results
+        - name: blank-forms
+          mountPath: /app/blank_forms
+      - name: frontend
+        image: 891377073036.dkr.ecr.us-west-2.amazonaws.com/tco-demo-frontend:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3000
+          name: frontend
+        resources:
+          requests:
+            cpu: "250m"
+            memory: "256Mi"
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
+        env:
+        - name: NEXT_PUBLIC_API_URL
+          value: "https://tco-demo.nolancrook.com/api"
+      volumes:
+      - name: uploads
+        emptyDir: {}
+      - name: results
+        emptyDir: {}
+      - name: blank-forms
+        emptyDir: {} 
