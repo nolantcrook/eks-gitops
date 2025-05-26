@@ -16,20 +16,20 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: tco-demo
+            name: tco-demo-frontend
             port:
               number: 80
       - path: /api/()(.*)
         pathType: Prefix
         backend:
           service:
-            name: tco-demo
+            name: tco-demo-backend
             port:
               number: 8001
       - path: /()(.*)
         pathType: Prefix
         backend:
           service:
-            name: tco-demo
+            name: tco-demo-frontend
             port:
               number: 80 

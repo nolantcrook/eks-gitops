@@ -1,19 +1,43 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: tco-demo-uploads
+  namespace: tco-demo
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: tco-demo-results
+  namespace: tco-demo
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: tco-demo
+  name: tco-demo-backend
   namespace: tco-demo
   labels:
-    app: tco-demo
+    app: tco-demo-backend
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: tco-demo
+      app: tco-demo-backend
   template:
     metadata:
       labels:
-        app: tco-demo
+        app: tco-demo-backend
     spec:
       serviceAccountName: tco-demo-sa
       containers:
@@ -43,6 +67,34 @@ spec:
           mountPath: /app/results
         - name: blank-forms
           mountPath: /app/blank_forms
+      volumes:
+      - name: uploads
+        persistentVolumeClaim:
+          claimName: tco-demo-uploads
+      - name: results
+        persistentVolumeClaim:
+          claimName: tco-demo-results
+      - name: blank-forms
+        emptyDir: {}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tco-demo-frontend
+  namespace: tco-demo
+  labels:
+    app: tco-demo-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tco-demo-frontend
+  template:
+    metadata:
+      labels:
+        app: tco-demo-frontend
+    spec:
+      containers:
       - name: frontend
         image: 891377073036.dkr.ecr.us-west-2.amazonaws.com/tco-demo-frontend:latest
         imagePullPolicy: Always
@@ -58,11 +110,4 @@ spec:
             memory: "512Mi"
         env:
         - name: NEXT_PUBLIC_API_URL
-          value: "https://tco-demo.nolancrook.com/api"
-      volumes:
-      - name: uploads
-        emptyDir: {}
-      - name: results
-        emptyDir: {}
-      - name: blank-forms
-        emptyDir: {} 
+          value: "https://tco-demo.nolancrook.com/api" 
