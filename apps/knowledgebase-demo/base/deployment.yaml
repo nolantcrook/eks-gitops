@@ -21,7 +21,7 @@ spec:
         image: 891377073036.dkr.ecr.us-west-2.amazonaws.com/demo-knowledgebase-backend:latest
         imagePullPolicy: Always
         ports:
-        - containerPort: 8000
+        - containerPort: 8001
           name: backend
         resources:
           requests:
@@ -31,6 +31,8 @@ spec:
             cpu: "1000m"
             memory: "1Gi"
         env:
+        - name: PORT
+          value: "8001"
         - name: OPENAI_API_KEY
           valueFrom:
             secretKeyRef:
@@ -73,7 +75,7 @@ spec:
         image: 891377073036.dkr.ecr.us-west-2.amazonaws.com/demo-knowledgebase-frontend:latest
         imagePullPolicy: Always
         ports:
-        - containerPort: 80
+        - containerPort: 8000
           name: frontend
         resources:
           requests:
