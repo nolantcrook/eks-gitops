@@ -1,0 +1,89 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demo-knowledgebase-backend
+  namespace: demo-knowledgebase
+  labels:
+    app: demo-knowledgebase-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: demo-knowledgebase-backend
+  template:
+    metadata:
+      labels:
+        app: demo-knowledgebase-backend
+    spec:
+      serviceAccountName: demo-knowledgebase-sa
+      containers:
+      - name: backend
+        image: 891377073036.dkr.ecr.us-west-2.amazonaws.com/demo-knowledgebase-backend:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8001
+          name: backend
+        resources:
+          requests:
+            cpu: "500m"
+            memory: "512Mi"
+          limits:
+            cpu: "1000m"
+            memory: "1Gi"
+        env:
+        - name: OPENAI_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: demo-knowledgebase-secrets
+              key: openai-api-key
+        volumeMounts:
+        - name: uploads
+          mountPath: /app/uploads
+        - name: results
+          mountPath: /app/results
+        - name: blank-forms
+          mountPath: /app/blank_forms
+      volumes:
+      - name: uploads
+        emptyDir: {}
+      - name: results
+        emptyDir: {}
+      - name: blank-forms
+        emptyDir: {}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demo-knowledgebase-frontend
+  namespace: demo-knowledgebase
+  labels:
+    app: demo-knowledgebase-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: demo-knowledgebase-frontend
+  template:
+    metadata:
+      labels:
+        app: demo-knowledgebase-frontend
+    spec:
+      containers:
+      - name: frontend
+        image: 891377073036.dkr.ecr.us-west-2.amazonaws.com/demo-knowledgebase-frontend:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8000
+          name: frontend
+        resources:
+          requests:
+            cpu: "250m"
+            memory: "256Mi"
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
+        env:
+        - name: NEXT_PUBLIC_API_URL
+          value: "https://demo-knowledgebase.nolancrook.com/api"
+        - name: BACKEND_URL
+          value: "http://demo-knowledgebase-backend:8001" 
