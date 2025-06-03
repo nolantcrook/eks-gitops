@@ -21,7 +21,7 @@ spec:
         image: 891377073036.dkr.ecr.us-west-2.amazonaws.com/demo-knowledgebase-backend:latest
         imagePullPolicy: Always
         ports:
-        - containerPort: 8001
+        - containerPort: 8000
           name: backend
         resources:
           requests:
@@ -73,7 +73,7 @@ spec:
         image: 891377073036.dkr.ecr.us-west-2.amazonaws.com/demo-knowledgebase-frontend:latest
         imagePullPolicy: Always
         ports:
-        - containerPort: 8000
+        - containerPort: 80
           name: frontend
         resources:
           requests:
