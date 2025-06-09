@@ -38,6 +38,11 @@ spec:
             secretKeyRef:
               name: demo-knowledgebase-secrets
               key: openai-api-key
+        - name: KNOWLEDGE_BASE_ID
+          valueFrom:
+            secretKeyRef:
+              name: demo-knowledgebase-secrets
+              key: knowledge-base-id
         volumeMounts:
         - name: uploads
           mountPath: /app/uploads
