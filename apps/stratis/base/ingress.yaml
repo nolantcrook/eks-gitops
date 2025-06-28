@@ -7,6 +7,16 @@ metadata:
     kubernetes.io/ingress.class: "nginx"
 spec:
   rules:
+  - host: stratis.stratis-ai.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: stratis-frontend
+            port:
+              number: 80 
   - host: stratis-ai.com
     http:
       paths:
