@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: hauliday-backend-service
+  namespace: hauliday
+  labels:
+    app: hauliday-backend
+spec:
+  selector:
+    app: hauliday-backend
+  ports:
+  - name: http
+    port: 80
+    targetPort: 3001
+    protocol: TCP
+  type: ClusterIP 

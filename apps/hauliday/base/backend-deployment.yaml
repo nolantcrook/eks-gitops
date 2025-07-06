@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hauliday-backend
+  namespace: hauliday
+  labels:
+    app: hauliday-backend
+    version: v1
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: hauliday-backend
+  template:
+    metadata:
+      labels:
+        app: hauliday-backend
+        version: v1
+    spec:
+      serviceAccountName: hauliday-backend-sa
+      containers:
+      - name: hauliday-backend
+        image: 891377073036.dkr.ecr.us-west-2.amazonaws.com/hauliday-backend:latest
+        ports:
+        - containerPort: 3001
+          name: http
+        env:
+        - name: NODE_ENV
+          value: "production"
+        - name: PORT
+          value: "3001"
+        - name: AWS_REGION
+          value: "us-west-2"
+        - name: DYNAMODB_TABLE_NAME
+          value: "hauliday_reservations"
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
+        livenessProbe:
+          httpGet:
+            path: /api/health
+            port: 3001
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 3
+        readinessProbe:
+          httpGet:
+            path: /api/health/ready
+            port: 3001
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 2
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsNonRoot: true
+          runAsUser: 1001
+          capabilities:
+            drop:
+            - ALL
+      restartPolicy: Always 

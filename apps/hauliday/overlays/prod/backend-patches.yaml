@@ -1,0 +1,18 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hauliday-backend
+  namespace: hauliday
+spec:
+  replicas: 3
+  template:
+    spec:
+      containers:
+      - name: hauliday-backend
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "200m"
+          limits:
+            memory: "512Mi"
+            cpu: "400m" 
