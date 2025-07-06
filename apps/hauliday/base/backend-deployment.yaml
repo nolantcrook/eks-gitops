@@ -33,6 +33,8 @@ spec:
           value: "us-west-2"
         - name: DYNAMODB_TABLE_NAME
           value: "hauliday_reservations"
+        - name: AWS_SDK_LOAD_CONFIG
+          value: "1"
         resources:
           requests:
             memory: "128Mi"
