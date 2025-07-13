@@ -24,7 +24,7 @@ spec:
         command: ['sh', '-c', 'until nc -z postgres-service 5432; do echo "Waiting for postgres..."; sleep 2; done;']
       containers:
       - name: umami
-                  image: ghcr.io/mikecao/umami:latest
+        image: ghcr.io/mikecao/umami:latest
         ports:
         - containerPort: 3000
           name: http
