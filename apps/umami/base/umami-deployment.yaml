@@ -30,17 +30,7 @@ spec:
           name: http
         env:
         - name: DATABASE_URL
-          value: "postgresql://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@postgres-service:5432/umami"
-        - name: POSTGRES_USER
-          valueFrom:
-            secretKeyRef:
-              name: umami-secrets
-              key: umami-postgres-user
-        - name: POSTGRES_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: umami-secrets
-              key: umami-postgres-password
+          value: "postgresql://umami:Umami123!@postgres-service:5432/umami"
         - name: HASH_SALT
           valueFrom:
             secretKeyRef:
