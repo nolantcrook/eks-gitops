@@ -18,20 +18,32 @@ spec:
         component: application
     spec:
       serviceAccountName: umami-sa
+      initContainers:
+      - name: wait-for-postgres
+        image: busybox:1.35
+        command: ['sh', '-c', 'until nc -z postgres-service 5432; do echo "Waiting for postgres..."; sleep 2; done;']
       containers:
       - name: umami
-        image: 891377073036.dkr.ecr.us-west-2.amazonaws.com/umami-frontend:latest
+        image: ghcr.io/mikecao/umami:postgresql-latest
         ports:
         - containerPort: 3000
           name: http
         env:
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: umami-secrets
+              key: database_url
+        - name: HASH_SALT
+          valueFrom:
+            secretKeyRef:
+              name: umami-secrets
+              key: hash_salt
         - name: POSTGRES_PASSWORD
           valueFrom:
             secretKeyRef:
               name: umami-secrets
               key: umami-postgres-password
-        - name: DATABASE_URL
-          value: "postgresql://umami:$(POSTGRES_PASSWORD)@postgres-service:5432/umami"
         - name: DATABASE_TYPE
           valueFrom:
             configMapKeyRef:
@@ -86,18 +98,6 @@ spec:
       - name: umami-storage
         persistentVolumeClaim:
           claimName: umami-pvc
-      initContainers:
-      - name: wait-for-postgres
-        image: busybox:1.35
-        command: ['sh', '-c']
-        args:
-        - |
-          echo "Waiting for PostgreSQL to be ready..."
-          until nc -z postgres-service 5432; do
-            echo "PostgreSQL is not ready yet, waiting..."
-            sleep 5
-          done
-          echo "PostgreSQL is ready!"
 ---
 apiVersion: v1
 kind: Service
