@@ -22,7 +22,7 @@ spec:
       # Prefer nodes that are more stable (though all are spot in your case)
       containers:
       - name: postgres
-        image: 891377073036.dkr.ecr.us-west-2.amazonaws.com/umami-postgres:latest
+        image: postgres:15
         ports:
         - containerPort: 5432
           name: postgres
