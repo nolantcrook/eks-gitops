@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: umami
+  labels:
+    name: umami
+    app: umami 

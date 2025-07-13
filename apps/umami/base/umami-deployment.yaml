@@ -1,0 +1,118 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: umami
+  namespace: umami
+  labels:
+    app: umami
+    component: application
+spec:
+  replicas: 2  # Can scale horizontally
+  selector:
+    matchLabels:
+      app: umami
+  template:
+    metadata:
+      labels:
+        app: umami
+        component: application
+    spec:
+      serviceAccountName: umami-sa
+      containers:
+      - name: umami
+        image: 891377073036.dkr.ecr.us-west-2.amazonaws.com/umami-app:latest
+        ports:
+        - containerPort: 3000
+          name: http
+        env:
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: umami-secrets
+              key: umami-postgres-password
+        - name: DATABASE_URL
+          value: "postgresql://umami:$(POSTGRES_PASSWORD)@postgres-service:5432/umami"
+        - name: DATABASE_TYPE
+          valueFrom:
+            configMapKeyRef:
+              name: umami-config
+              key: DATABASE_TYPE
+        - name: APP_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: umami-secrets
+              key: umami-app-secret
+        - name: DISABLE_TELEMETRY
+          valueFrom:
+            configMapKeyRef:
+              name: umami-config
+              key: DISABLE_TELEMETRY
+        - name: REMOVE_TRAILING_SLASH
+          valueFrom:
+            configMapKeyRef:
+              name: umami-config
+              key: REMOVE_TRAILING_SLASH
+        - name: NODE_ENV
+          valueFrom:
+            configMapKeyRef:
+              name: umami-config
+              key: NODE_ENV
+        volumeMounts:
+        - name: umami-storage
+          mountPath: /app/data
+        livenessProbe:
+          httpGet:
+            path: /api/heartbeat
+            port: 3000
+          initialDelaySeconds: 60
+          periodSeconds: 30
+          timeoutSeconds: 10
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /api/heartbeat
+            port: 3000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+      volumes:
+      - name: umami-storage
+        persistentVolumeClaim:
+          claimName: umami-pvc
+      initContainers:
+      - name: wait-for-postgres
+        image: busybox:1.35
+        command: ['sh', '-c']
+        args:
+        - |
+          echo "Waiting for PostgreSQL to be ready..."
+          until nc -z postgres-service 5432; do
+            echo "PostgreSQL is not ready yet, waiting..."
+            sleep 5
+          done
+          echo "PostgreSQL is ready!"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: umami-service
+  namespace: umami
+  labels:
+    app: umami
+    component: application
+spec:
+  type: ClusterIP
+  ports:
+  - port: 3000
+    targetPort: 3000
+    protocol: TCP
+    name: http
+  selector:
+    app: umami 
