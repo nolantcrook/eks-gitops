@@ -20,21 +20,6 @@ spec:
         component: database
     spec:
       # Prefer nodes that are more stable (though all are spot in your case)
-      affinity:
-        nodeAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 100
-            preference:
-              matchExpressions:
-              - key: karpenter.sh/capacity-type
-                operator: In
-                values: ["on-demand"]
-          - weight: 50
-            preference:
-              matchExpressions:
-              - key: eks.amazonaws.com/capacityType
-                operator: In
-                values: ["ON_DEMAND"]
       containers:
       - name: postgres
         image: 891377073036.dkr.ecr.us-west-2.amazonaws.com/umami-postgres:latest
