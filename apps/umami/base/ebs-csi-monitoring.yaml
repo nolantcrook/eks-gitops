@@ -1,0 +1,71 @@
+# EBS CSI Controller Monitoring and Alerting
+apiVersion: v1
+kind: ServiceMonitor
+metadata:
+  name: ebs-csi-controller
+  namespace: kube-system
+  labels:
+    app.kubernetes.io/name: aws-ebs-csi-driver
+spec:
+  selector:
+    matchLabels:
+      app: ebs-csi-controller
+  endpoints:
+  - port: healthz
+    interval: 30s
+    path: /metrics
+---
+# ConfigMap for EBS CSI troubleshooting script
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ebs-csi-troubleshoot
+  namespace: kube-system
+  labels:
+    app.kubernetes.io/name: aws-ebs-csi-driver
+data:
+  troubleshoot.sh: |
+    #!/bin/bash
+    echo "=== EBS CSI Controller Status ==="
+    kubectl get deployment ebs-csi-controller -n kube-system
+    echo
+    echo "=== EBS CSI Controller Pods ==="
+    kubectl get pods -n kube-system -l app=ebs-csi-controller
+    echo
+    echo "=== EBS CSI Service Account ==="
+    kubectl get serviceaccount ebs-csi-controller-sa -n kube-system -o yaml
+    echo
+    echo "=== Recent Events ==="
+    kubectl get events -n kube-system --field-selector involvedObject.name=ebs-csi-controller --sort-by='.lastTimestamp' | tail -10
+    echo
+    echo "=== PVC Status ==="
+    kubectl get pvc --all-namespaces | grep -E "(Pending|Failed)"
+    echo
+    echo "=== CSI Node Pods ==="
+    kubectl get pods -n kube-system -l app=ebs-csi-node
+---
+# Job to run troubleshooting on demand
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: ebs-csi-troubleshoot
+  namespace: kube-system
+  labels:
+    app.kubernetes.io/name: aws-ebs-csi-driver
+spec:
+  template:
+    spec:
+      serviceAccountName: ebs-csi-controller-sa
+      containers:
+      - name: troubleshoot
+        image: bitnami/kubectl:latest
+        command: ["/bin/bash", "/scripts/troubleshoot.sh"]
+        volumeMounts:
+        - name: troubleshoot-script
+          mountPath: /scripts
+      volumes:
+      - name: troubleshoot-script
+        configMap:
+          name: ebs-csi-troubleshoot
+          defaultMode: 0755
+      restartPolicy: OnFailure 

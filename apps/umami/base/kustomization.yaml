@@ -13,3 +13,5 @@ resources:
 - storage.yaml
 - postgres-deployment.yaml
 - umami-deployment.yaml
+- ingress.yaml
+- ebs-csi-monitoring.yaml

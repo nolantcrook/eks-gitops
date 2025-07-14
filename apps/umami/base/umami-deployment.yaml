@@ -18,10 +18,21 @@ spec:
         component: application
     spec:
       serviceAccountName: umami-sa
+      # Tolerations for spot instances
+      tolerations:
+      - key: "kubernetes.io/arch"
+        operator: "Equal"
+        value: "amd64"
+        effect: "NoSchedule"
+      - key: "node.kubernetes.io/instance-type"
+        operator: "Exists"
+        effect: "NoSchedule"
+      nodeSelector:
+        kubernetes.io/arch: amd64
       initContainers:
       - name: wait-for-postgres
         image: busybox:1.35
-        command: ['sh', '-c', 'until nc -z postgres-service 5432; do echo "Waiting for postgres..."; sleep 2; done;']
+        command: ['sh', '-c', 'timeout 300 sh -c "until nc -z postgres-service 5432; do echo \"Waiting for postgres...\"; sleep 2; done;"']
       containers:
       - name: umami
         image: ghcr.io/umami-software/umami:postgresql-latest
@@ -64,6 +75,14 @@ spec:
         volumeMounts:
         - name: umami-storage
           mountPath: /app/data
+        startupProbe:
+          httpGet:
+            path: /api/heartbeat
+            port: 3000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 30
         livenessProbe:
           httpGet:
             path: /api/heartbeat
@@ -107,4 +126,15 @@ spec:
     protocol: TCP
     name: http
   selector:
-    app: umami 
+    app: umami
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: umami-pdb
+  namespace: umami
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: umami 

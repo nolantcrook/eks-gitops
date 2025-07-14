@@ -6,6 +6,8 @@ metadata:
   labels:
     app: postgres
     component: database
+  annotations:
+    volume.beta.kubernetes.io/storage-class: "gp3"
 spec:
   accessModes:
     - ReadWriteOnce
@@ -22,6 +24,8 @@ metadata:
   labels:
     app: umami
     component: application
+  annotations:
+    volume.beta.kubernetes.io/storage-class: "gp3"
 spec:
   accessModes:
     - ReadWriteOnce

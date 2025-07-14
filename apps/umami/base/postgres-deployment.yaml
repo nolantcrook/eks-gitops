@@ -19,7 +19,17 @@ spec:
         app: postgres
         component: database
     spec:
-      # Prefer nodes that are more stable (though all are spot in your case)
+      # Tolerations for spot instances
+      tolerations:
+      - key: "kubernetes.io/arch"
+        operator: "Equal"
+        value: "amd64"
+        effect: "NoSchedule"
+      - key: "node.kubernetes.io/instance-type"
+        operator: "Exists"
+        effect: "NoSchedule"
+      nodeSelector:
+        kubernetes.io/arch: amd64
       containers:
       - name: postgres
         image: postgres:15
@@ -47,6 +57,18 @@ spec:
         volumeMounts:
         - name: postgres-storage
           mountPath: /var/lib/postgresql/data
+        startupProbe:
+          exec:
+            command:
+            - pg_isready
+            - -U
+            - umami
+            - -d
+            - umami
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 30
         livenessProbe:
           exec:
             command:
