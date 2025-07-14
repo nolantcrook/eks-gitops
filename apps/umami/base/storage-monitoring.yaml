@@ -1,0 +1,68 @@
+# ConfigMap for storage troubleshooting script
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: storage-troubleshoot
+  namespace: umami
+  labels:
+    app.kubernetes.io/name: umami-storage
+data:
+  troubleshoot.sh: |
+    #!/bin/bash
+    echo "=== Storage Status ==="
+    kubectl get pv,pvc -n umami
+    echo
+    echo "=== EFS CSI Driver Status ==="
+    kubectl get pods -n kube-system | grep efs-csi
+    echo
+    echo "=== Storage Classes ==="
+    kubectl get storageclass
+    echo
+    echo "=== Recent Events ==="
+    kubectl get events -n umami --sort-by='.lastTimestamp' | tail -10
+    echo
+    echo "=== Pod Volume Mounts ==="
+    kubectl get pods -n umami -o jsonpath='{range .items[*]}{.metadata.name}{": "}{.spec.volumes[*].persistentVolumeClaim.claimName}{"\n"}{end}'
+---
+# ClusterRole for troubleshooting
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: storage-troubleshoot
+  labels:
+    app.kubernetes.io/name: umami-storage
+rules:
+- apiGroups: [""]
+  resources: ["pods", "events", "persistentvolumeclaims", "persistentvolumes", "serviceaccounts"]
+  verbs: ["get", "list"]
+- apiGroups: ["apps"]
+  resources: ["deployments"]
+  verbs: ["get", "list"]
+- apiGroups: ["storage.k8s.io"]
+  resources: ["storageclasses"]
+  verbs: ["get", "list"]
+---
+# ClusterRoleBinding for troubleshooting
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: storage-troubleshoot
+  labels:
+    app.kubernetes.io/name: umami-storage
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: storage-troubleshoot
+subjects:
+- kind: ServiceAccount
+  name: storage-troubleshoot-sa
+  namespace: umami
+---
+# ServiceAccount for troubleshooting
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: storage-troubleshoot-sa
+  namespace: umami
+  labels:
+    app.kubernetes.io/name: umami-storage 

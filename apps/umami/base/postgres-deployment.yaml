@@ -19,17 +19,6 @@ spec:
         app: postgres
         component: database
     spec:
-      # Tolerations for spot instances
-      tolerations:
-      - key: "kubernetes.io/arch"
-        operator: "Equal"
-        value: "amd64"
-        effect: "NoSchedule"
-      - key: "node.kubernetes.io/instance-type"
-        operator: "Exists"
-        effect: "NoSchedule"
-      nodeSelector:
-        kubernetes.io/arch: amd64
       containers:
       - name: postgres
         image: postgres:15
@@ -57,6 +46,7 @@ spec:
         volumeMounts:
         - name: postgres-storage
           mountPath: /var/lib/postgresql/data
+          subPath: postgres
         startupProbe:
           exec:
             command:

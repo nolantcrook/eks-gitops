@@ -9,9 +9,9 @@ metadata:
 resources:
 - namespace.yaml
 - secrets.yaml
-- storage-class.yaml
 - storage.yaml
+- efs-parameter.yaml
 - postgres-deployment.yaml
 - umami-deployment.yaml
 - ingress.yaml
-- ebs-csi-monitoring.yaml
+- storage-monitoring.yaml

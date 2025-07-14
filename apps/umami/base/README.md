@@ -1,72 +1,82 @@
 # Umami Analytics Deployment Guide
 
-This directory contains Kubernetes manifests for deploying Umami Analytics with PostgreSQL on EKS.
+This directory contains Kubernetes manifests for deploying Umami Analytics with PostgreSQL on EKS using EFS storage.
 
 ## Components
 
-- **PostgreSQL Database**: Persistent storage with 20Gi EBS GP3 volume
-- **Umami Application**: Web analytics application with 5Gi storage
-- **EBS CSI Controller**: Service account and monitoring for volume provisioning
+- **PostgreSQL Database**: Persistent storage with 20Gi EFS volume
+- **Umami Application**: Web analytics application with 5Gi EFS storage
+- **EFS Storage**: ReadWriteMany volumes for scalable storage
 - **Ingress**: NGINX ingress for external access
 - **Secrets**: External secrets integration with AWS Secrets Manager
 
 ## Quick Deploy
 
 ```bash
-kubectl apply -k stable-diffusion-gitops/apps/umami/base/
+kubectl apply -k stable-diffusion-gitops/apps/umami/overlays/dev/
+```
+
+## Storage Architecture
+
+### EFS Benefits
+- **ReadWriteMany**: Multiple pods can mount the same volume simultaneously
+- **No Multi-Attach Errors**: Unlike EBS, EFS supports concurrent access
+- **Automatic Scaling**: EFS scales automatically with usage
+- **Cross-AZ Access**: Volumes can be accessed from any availability zone
+
+### Volume Configuration
+```yaml
+persistentVolumeClaim:
+  name: postgres-pvc
+  accessModes:
+    - ReadWriteMany
+  storageClassName: efs-sc
+  storage: 20Gi
 ```
 
 ## Troubleshooting
 
-### EBS Volume Provisioning Issues
+### Storage Issues
 
-If PVCs are stuck in "Pending" state:
+If pods are stuck in "ContainerCreating" state:
 
-1. **Check EBS CSI Controller Status**:
+1. **Check EFS CSI Driver Status**:
    ```bash
-   kubectl get deployment ebs-csi-controller -n kube-system
-   kubectl get pods -n kube-system -l app=ebs-csi-controller
+   kubectl get pods -n kube-system | grep efs-csi
    ```
 
-2. **Verify Service Account**:
+2. **Verify EFS Mount Status**:
    ```bash
-   kubectl get serviceaccount ebs-csi-controller-sa -n kube-system
-   kubectl describe serviceaccount ebs-csi-controller-sa -n kube-system
+   kubectl get pvc -n umami
+   kubectl get pv
    ```
 
-3. **Check IAM Role Annotation**:
-   The service account should have:
-   ```yaml
-   annotations:
-     eks.amazonaws.com/role-arn: arn:aws:iam::891377073036:role/eks-ebs-csi-driver-role-dev
+3. **Check Storage Class**:
+   ```bash
+   kubectl get storageclass efs-sc
    ```
 
-4. **Restart EBS CSI Controller**:
+4. **Run Storage Troubleshooting**:
    ```bash
-   kubectl rollout restart deployment ebs-csi-controller -n kube-system
-   ```
-
-5. **Run Troubleshooting Script**:
-   ```bash
-   kubectl create job ebs-csi-troubleshoot-$(date +%s) --from=job/ebs-csi-troubleshoot -n kube-system
-   kubectl logs -f job/ebs-csi-troubleshoot-$(date +%s) -n kube-system
+   kubectl create configmap storage-troubleshoot -n umami --from-file=troubleshoot.sh
+   kubectl create job storage-check --image=bitnami/kubectl:latest -n umami
    ```
 
 ### Common Issues and Solutions
 
 #### Issue: PVCs Stuck in Pending
-**Cause**: EBS CSI controller not running or missing IAM permissions
+**Cause**: EFS CSI driver not running or EFS filesystem not available
 **Solution**: 
-1. Verify EBS CSI controller pods are running
-2. Check service account has proper IAM role annotation
-3. Restart the controller deployment
+1. Verify EFS CSI driver pods are running
+2. Check EFS filesystem exists and is accessible
+3. Verify EFS access points configuration
 
-#### Issue: Pods Stuck in ContainerCreating
-**Cause**: Volume mounting failed
+#### Issue: Pods Can't Mount EFS
+**Cause**: Security groups or NFS access issues
 **Solution**:
-1. Check if PVCs are bound
-2. Verify storage class exists
-3. Check AWS EBS volume limits
+1. Check security groups allow NFS (port 2049)
+2. Verify EFS mount targets in correct subnets
+3. Check EFS access point permissions
 
 #### Issue: Database Connection Failed
 **Cause**: PostgreSQL not ready or network issues
@@ -88,6 +98,7 @@ kubectl logs -f deployment/postgres -n umami
 ```bash
 kubectl get pvc -n umami
 kubectl get pv
+kubectl describe pvc postgres-pvc -n umami
 ```
 
 #### Check Services
@@ -104,19 +115,19 @@ The deployment includes:
 - **Readiness Probes**: Control traffic routing
 - **Pod Disruption Budgets**: Maintain availability during updates
 
-### Spot Instance Configuration
+### EFS-Specific Configuration
 
-The deployment includes tolerations for spot instances:
-- Architecture-specific scheduling (amd64)
-- Instance type tolerations
-- Proper resource requests/limits
+- **No Architecture Constraints**: EFS works on any node architecture
+- **Shared Storage**: Multiple replicas can share the same data
+- **Sub-Path Mounting**: Uses subPaths to isolate data (postgres, umami)
+- **Automatic Provisioning**: EFS access points handle provisioning
 
 ### Security
 
 - **Service Accounts**: Dedicated SAs with minimal permissions
 - **External Secrets**: Integration with AWS Secrets Manager
 - **Network Policies**: Restricted network access
-- **Pod Security**: Security contexts and policies
+- **EFS Encryption**: Volumes encrypted at rest and in transit
 
 ## Scaling
 
@@ -129,9 +140,7 @@ kubectl scale deployment umami --replicas=3 -n umami
 Update resource limits in the deployment manifest and reapply.
 
 ### Storage Scaling
-```bash
-kubectl patch pvc postgres-pvc -n umami -p '{"spec":{"resources":{"requests":{"storage":"50Gi"}}}}'
-```
+EFS scales automatically - no manual intervention needed.
 
 ## Backup and Recovery
 
@@ -145,6 +154,11 @@ kubectl exec -it deployment/postgres -n umami -- pg_dump -U umami umami > umami-
 kubectl exec -i deployment/postgres -n umami -- psql -U umami -d umami < umami-backup.sql
 ```
 
+### EFS Backup
+- AWS Backup automatically handles EFS backups
+- Point-in-time recovery available through AWS console
+- Cross-region replication supported
+
 ## Performance Tuning
 
 ### PostgreSQL Optimization
@@ -157,10 +171,15 @@ kubectl exec -i deployment/postgres -n umami -- psql -U umami -d umami < umami-b
 - Configure proper resource limits
 - Enable gzip compression in nginx ingress
 
+### EFS Performance
+- Use General Purpose performance mode for most workloads
+- Consider Provisioned Throughput for high-performance needs
+- Monitor EFS metrics in CloudWatch
+
 ## Maintenance
 
 ### Regular Tasks
-1. Monitor disk usage and scale storage as needed
+1. Monitor EFS usage and performance metrics
 2. Update container images regularly
 3. Rotate secrets and certificates
 4. Review and update resource limits
@@ -168,15 +187,31 @@ kubectl exec -i deployment/postgres -n umami -- psql -U umami -d umami < umami-b
 ### Upgrade Process
 1. Backup database
 2. Update image tags in manifests
-3. Apply rolling updates
+3. Apply rolling updates (no downtime with EFS)
 4. Verify application functionality
 5. Monitor for issues
+
+## Migration from EBS to EFS
+
+### What Changed
+- **Storage Class**: `gp3` → `efs-sc`
+- **Access Mode**: `ReadWriteOnce` → `ReadWriteMany`
+- **Volume Type**: EBS GP3 → EFS
+- **Architecture**: Removed node selectors and tolerations
+- **Monitoring**: Updated to focus on EFS instead of EBS CSI
+
+### Benefits Gained
+- ✅ No more multi-attach errors
+- ✅ Multiple replicas can share storage
+- ✅ Cross-AZ accessibility
+- ✅ Automatic scaling
+- ✅ Better for stateful applications
 
 ## Support
 
 For issues:
 1. Check application logs
 2. Review Kubernetes events
-3. Run troubleshooting scripts
-4. Check AWS CloudWatch for EBS metrics
-5. Review ArgoCD application status 
+3. Check EFS mount status
+4. Review AWS CloudWatch for EFS metrics
+5. Verify security groups and NFS access 

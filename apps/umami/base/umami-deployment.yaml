@@ -7,7 +7,7 @@ metadata:
     app: umami
     component: application
 spec:
-  replicas: 2  # Can scale horizontally
+  replicas: 2  # Can scale horizontally with EFS
   selector:
     matchLabels:
       app: umami
@@ -18,17 +18,6 @@ spec:
         component: application
     spec:
       serviceAccountName: umami-sa
-      # Tolerations for spot instances
-      tolerations:
-      - key: "kubernetes.io/arch"
-        operator: "Equal"
-        value: "amd64"
-        effect: "NoSchedule"
-      - key: "node.kubernetes.io/instance-type"
-        operator: "Exists"
-        effect: "NoSchedule"
-      nodeSelector:
-        kubernetes.io/arch: amd64
       initContainers:
       - name: wait-for-postgres
         image: busybox:1.35
@@ -75,6 +64,7 @@ spec:
         volumeMounts:
         - name: umami-storage
           mountPath: /app/data
+          subPath: umami
         startupProbe:
           httpGet:
             path: /api/heartbeat

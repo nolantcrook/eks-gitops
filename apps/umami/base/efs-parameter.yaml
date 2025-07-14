@@ -1,0 +1,31 @@
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: efs-config
+  namespace: umami
+spec:
+  refreshInterval: "15m"
+  secretStoreRef:
+    name: aws-parameter-store
+    kind: SecretStore
+  target:
+    name: efs-config
+  data:
+    - secretKey: efs-id
+      remoteRef:
+        key: /eks/efs-id
+---
+apiVersion: external-secrets.io/v1
+kind: SecretStore
+metadata:
+  name: aws-parameter-store
+  namespace: umami
+spec:
+  provider:
+    aws:
+      service: ParameterStore
+      region: us-west-2
+      auth:
+        jwt:
+          serviceAccountRef:
+            name: umami-sa 

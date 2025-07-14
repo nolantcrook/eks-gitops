@@ -1,3 +1,16 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: efs-sc
+  labels:
+    argocd.argoproj.io/instance: umami
+provisioner: efs.csi.aws.com
+parameters:
+  provisioningMode: efs-ap
+  fileSystemId: fs-02f28eb4ddcaa4817
+  accessPointId: fsap-097f24582f5f3c2c7
+volumeBindingMode: Immediate
+---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -8,8 +21,8 @@ metadata:
     component: database
 spec:
   accessModes:
-    - ReadWriteOnce
-  storageClassName: gp3  # Use EBS GP3 storage class for EKS
+    - ReadWriteMany
+  storageClassName: efs-sc
   resources:
     requests:
       storage: 20Gi
@@ -24,8 +37,44 @@ metadata:
     component: application
 spec:
   accessModes:
-    - ReadWriteOnce
-  storageClassName: gp3
+    - ReadWriteMany
+  storageClassName: efs-sc
   resources:
     requests:
-      storage: 5Gi 
+      storage: 5Gi
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: postgres-efs-pv
+  labels:
+    app: postgres
+spec:
+  capacity:
+    storage: 20Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: efs-sc
+  csi:
+    driver: efs.csi.aws.com
+    volumeHandle: fs-02f28eb4ddcaa4817
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: umami-efs-pv
+  labels:
+    app: umami
+spec:
+  capacity:
+    storage: 5Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: efs-sc
+  csi:
+    driver: efs.csi.aws.com
+    volumeHandle: fs-02f28eb4ddcaa4817 
