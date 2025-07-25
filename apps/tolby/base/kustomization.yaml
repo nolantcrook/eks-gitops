@@ -1,0 +1,16 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: tolby
+
+resources:
+- namespace.yaml
+- deployment.yaml
+- service.yaml
+- ingress.yaml
+- backend-deployment.yaml
+- backend-service.yaml
+- backend-serviceaccount.yaml
+
+# Note: mock-backend.yaml removed since we now have real backend
+# commonLabels removed to allow individual resource labels 

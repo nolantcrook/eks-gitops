@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tolby-backend
+  namespace: tolby
+  labels:
+    app: tolby-backend
+    version: v1
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: tolby-backend
+  template:
+    metadata:
+      labels:
+        app: tolby-backend
+        version: v1
+    spec:
+      serviceAccountName: tolby-backend-sa
+      containers:
+      - name: tolby-backend
+        image: 891377073036.dkr.ecr.us-west-2.amazonaws.com/tolby-backend:latest
+        ports:
+        - containerPort: 8000
+          name: http
+        env:
+        - name: AWS_REGION
+          value: "us-west-2"
+        - name: SES_FROM_EMAIL
+          value: "nolan@tolby.co"
+        - name: ENVIRONMENT
+          value: "production"
+        - name: AWS_SDK_LOAD_CONFIG
+          value: "1"
+        - name: AWS_ROLE_ARN
+          value: "arn:aws:iam::891377073036:role/eks-tolby-role"
+        - name: AWS_WEB_IDENTITY_TOKEN_FILE
+          value: "/var/run/secrets/eks.amazonaws.com/serviceaccount/token"
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 3
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 2
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsNonRoot: true
+          runAsUser: 1001
+          capabilities:
+            drop:
+            - ALL
+      restartPolicy: Always 
