@@ -17,7 +17,7 @@ spec:
       - name: tolby-frontend
         image: 891377073036.dkr.ecr.us-west-2.amazonaws.com/tolby-frontend:latest
         ports:
-        - containerPort: 3000
+        - containerPort: 80
         env:
         - name: REACT_APP_API_URL
           value: "http://tolby-backend:8000"
@@ -31,12 +31,12 @@ spec:
         livenessProbe:
           httpGet:
             path: /
-            port: 3000
+            port: 80
           initialDelaySeconds: 30
           periodSeconds: 10
         readinessProbe:
           httpGet:
             path: /
-            port: 3000
+            port: 80
           initialDelaySeconds: 5
           periodSeconds: 5 
