@@ -15,5 +15,5 @@ spec:
         backend:
           service:
             name: tolby-frontend
-                          port:
+              port:
                 number: 80 
