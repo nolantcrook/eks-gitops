@@ -4,7 +4,7 @@ metadata:
   name: hauliday-frontend
   namespace: hauliday
 spec:
-  replicas: 2
+  replicas: 4
   selector:
     matchLabels:
       app: hauliday-frontend
