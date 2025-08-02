@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: treasure-frontend
+  namespace: treasure
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: treasure-frontend
+  template:
+    metadata:
+      labels:
+        app: treasure-frontend
+    spec:
+      containers:
+      - name: treasure-frontend
+        image: 891377073036.dkr.ecr.us-west-2.amazonaws.com/treasure-frontend:latest
+        ports:
+        - containerPort: 3000
+        env:
+        - name: REACT_APP_API_URL
+          value: "http://treasure-backend:8000"
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "256Mi"
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 3000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 3000
+          initialDelaySeconds: 5
+          periodSeconds: 5 

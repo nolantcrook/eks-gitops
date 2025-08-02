@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: treasure-backend
+  namespace: treasure
+  labels:
+    app: treasure-backend
+spec:
+  selector:
+    app: treasure-backend
+  ports:
+  - name: http
+    port: 8000
+    targetPort: 8000
+    protocol: TCP
+  type: ClusterIP 
