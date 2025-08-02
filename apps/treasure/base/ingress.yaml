@@ -7,10 +7,20 @@ metadata:
     kubernetes.io/ingress.class: "nginx"
 spec:
   rules:
-  - host: aitreasuremap.com
+  - host: treasure.aitreasuremap.com
     http:
       paths:
       - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: treasure-frontend
+            port:
+              number: 80
+  - host: treasure.aitreasuremap.com
+    http:
+      paths:
+      - path: /oauth2/idpresponse
         pathType: Prefix
         backend:
           service:
