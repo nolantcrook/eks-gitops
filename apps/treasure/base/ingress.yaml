@@ -17,9 +17,40 @@ spec:
             name: treasure-frontend
             port:
               number: 80
-  - host: treasure.aitreasuremap.com
+      - path: /oauth2/idpresponse
+        pathType: Prefix
+        backend:
+          service:
+            name: treasure-frontend
+            port:
+              number: 80
+  - host: aitreasuremap.com
     http:
       paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: treasure-frontend
+            port:
+              number: 80
+      - path: /oauth2/idpresponse
+        pathType: Prefix
+        backend:
+          service:
+            name: treasure-frontend
+            port:
+              number: 80
+  - host: www.aitreasuremap.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: treasure-frontend
+            port:
+              number: 80
       - path: /oauth2/idpresponse
         pathType: Prefix
         backend:
